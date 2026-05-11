@@ -1,0 +1,16 @@
+services:
+  mysql:
+    image: mysql:8.0.39
+    container_name: pivot-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: pivot_root_2026
+      MYSQL_DATABASE: pivot
+      MYSQL_USER: pivot
+      MYSQL_PASSWORD: pivot_pass_2026
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
