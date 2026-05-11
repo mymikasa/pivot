@@ -3,10 +3,10 @@
 
 @theme {
   --color-surface-0: #ffffff;
-  --color-surface-1: #f8fafb;
+  --color-surface-1: #f5f6f8;
   --color-surface-2: #f1f5f4;
   --color-surface-3: #e2e8e6;
-  --color-border-dim: #e2e6e4;
+  --color-border-dim: #e4e7eb;
   --color-border-mid: #c8cfc9;
   --color-text-primary: #111816;
   --color-text-secondary: #4b5548;
@@ -17,6 +17,12 @@
   --color-accent-light: #ccfbf1;
   --color-danger: #dc2626;
   --color-danger-dim: rgba(220, 38, 38, 0.06);
+  --color-sidebar: #111a1f;
+  --color-sidebar-hover: rgba(255, 255, 255, 0.05);
+  --color-sidebar-active: rgba(13, 148, 136, 0.12);
+  --color-sidebar-border: rgba(255, 255, 255, 0.06);
+  --color-sidebar-text: #6d7f82;
+  --color-sidebar-text-active: #e2ece9;
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
