@@ -9,18 +9,53 @@ from src.core.security import (
     create_access_token,
     create_refresh_token,
     decode_token,
+    get_password_hash,
     verify_password,
 )
-from src.models.user import RefreshToken, User
+from src.models.user import RefreshToken, Role, User
 from src.schemas.auth import (
     LoginRequest,
     LoginResponse,
     RefreshRequest,
+    RegisterRequest,
     TokenResponse,
     UserInfo,
 )
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+
+@router.post("/register")
+def register(body: RegisterRequest, db: Session = Depends(get_db)):
+    existing = (
+        db.query(User)
+        .filter((User.username == body.username) | (User.email == body.email))
+        .first()
+    )
+    if existing:
+        field = "用户名" if existing.username == body.username else "邮箱"
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"{field}已存在",
+        )
+
+    user_role = db.query(Role).filter(Role.name == "user").first()
+    if user_role is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="系统角色未初始化",
+        )
+
+    user = User(
+        username=body.username,
+        email=body.email,
+        hashed_password=get_password_hash(body.password),
+        role_id=user_role.id,
+        is_active=True,
+    )
+    db.add(user)
+    db.commit()
+    return {"message": "注册成功"}
 
 
 @router.post("/login", response_model=LoginResponse)
