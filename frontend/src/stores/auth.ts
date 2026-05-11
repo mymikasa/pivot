@@ -1,4 +1,3 @@
-const ACCESS_TOKEN_KEY = "pivot_access_token"
 const REFRESH_TOKEN_KEY = "pivot_refresh_token"
 
 let accessToken: string | null = null

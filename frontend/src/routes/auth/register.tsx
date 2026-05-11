@@ -1,18 +1,18 @@
 import { Link, createFileRoute, redirect } from "@tanstack/react-router"
 
-import { LoginForm } from "@/components/auth/login-form"
+import { RegisterForm } from "@/components/auth/register-form"
 import { getRefreshToken } from "@/stores/auth"
 
-export const Route = createFileRoute("/auth/login")({
+export const Route = createFileRoute("/auth/register")({
   beforeLoad: () => {
     if (getRefreshToken()) {
       throw redirect({ to: "/" })
     }
   },
-  component: LoginPage,
+  component: RegisterPage,
 })
 
-function LoginPage() {
+function RegisterPage() {
   return (
     <div className="relative flex min-h-screen overflow-hidden bg-surface-0 font-[var(--font-display)]">
       <div
@@ -58,19 +58,19 @@ function LoginPage() {
             className="animate-fade-up text-5xl font-bold leading-[1.1] tracking-tight text-text-primary"
             style={{ animationDelay: "0.2s" }}
           >
-            你的智能
+            从第一位用户开始
             <br />
             <span className="bg-gradient-to-r from-accent to-teal-400 bg-clip-text text-transparent">
-              RAG Agent 引擎
+              搭建业务知识中枢
             </span>
           </h1>
           <p
             className="animate-fade-up mt-6 text-lg leading-relaxed text-text-secondary"
             style={{ animationDelay: "0.35s" }}
           >
-            知识库驱动、意图精准推理、个人助手随行——
+            创建账号后即可进入 Pivot，
             <br />
-            Pivot 让 AI 真正理解你的业务。
+            将团队知识整理成可检索、可推理的 AI 工作流。
           </p>
 
           <div
@@ -78,9 +78,9 @@ function LoginPage() {
             style={{ animationDelay: "0.5s" }}
           >
             {[
-              { value: "RAG", label: "检索增强生成" },
-              { value: "意图推理", label: "精准理解" },
-              { value: "知识库", label: "私有沉淀" },
+              { value: "账号", label: "自助创建" },
+              { value: "User", label: "默认角色" },
+              { value: "安全", label: "密码加密" },
             ].map((stat) => (
               <div key={stat.label} className="group">
                 <div className="font-mono text-2xl font-semibold text-accent transition-colors group-hover:text-accent-hover">
@@ -102,7 +102,7 @@ function LoginPage() {
 
       <div className="relative z-10 flex flex-1 items-center justify-center p-6 sm:p-10 lg:p-12">
         <div
-          className="w-full max-w-[420px] animate-fade-up rounded-2xl border border-border-dim bg-white/80 p-8 shadow-xl shadow-black/[0.03] backdrop-blur-xl sm:p-10"
+          className="w-full max-w-[440px] animate-fade-up rounded-2xl border border-border-dim bg-white/80 p-8 shadow-xl shadow-black/[0.03] backdrop-blur-xl sm:p-10"
           style={{ animationDelay: "0.1s" }}
         >
           <div className="mb-8 lg:hidden">
@@ -131,47 +131,24 @@ function LoginPage() {
 
           <div className="mb-8">
             <h2 className="text-2xl font-semibold tracking-tight text-text-primary">
-              欢迎回来
+              创建账号
             </h2>
             <p className="mt-2 text-sm text-text-secondary">
-              输入你的凭据以继续
+              填写信息注册新账号
             </p>
           </div>
 
-          <LoginForm />
+          <RegisterForm />
 
           <div className="mt-6 text-center text-sm text-text-secondary">
-            没有账号？
+            已有账号？
             <Link
-              to="/auth/register"
-              data-testid="nav-register"
+              to="/auth/login"
+              data-testid="nav-login"
               className="font-semibold text-accent transition-colors hover:text-accent-hover"
             >
-              去注册
+              去登录
             </Link>
-          </div>
-
-          <div className="mt-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-border-dim" />
-            <span className="text-xs text-text-muted">安全连接</span>
-            <div className="h-px flex-1 bg-border-dim" />
-          </div>
-
-          <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-text-muted">
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            <span>端到端加密传输</span>
           </div>
         </div>
       </div>

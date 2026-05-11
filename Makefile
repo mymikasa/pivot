@@ -34,10 +34,10 @@ db-setup: migrate seed
 dev:
 	docker compose up -d
 	@sleep 3
-	uv run uvicorn src.main:app --reload & sleep 2 && cd frontend && npm run dev
+	uv run python -m src.cli --env dev & sleep 2 && cd frontend && npm run dev
 
 backend:
-	uv run uvicorn src.main:app --reload
+	uv run python -m src.cli --env dev
 
 frontend:
 	cd frontend && npm run dev
