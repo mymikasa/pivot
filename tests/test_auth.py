@@ -84,3 +84,150 @@ def test_login_inactive_user(client, db, seed_roles):
         json={"username": "inactive", "password": "test1234"},
     )
     assert response.status_code == 401
+
+
+def test_register_success(client, seed_roles):
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "username": "newuser",
+            "email": "newuser@pivot.com",
+            "password": "test1234",
+            "confirm_password": "test1234",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["message"] == "注册成功"
+
+
+def test_register_duplicate_username(client, db, seed_roles):
+    from src.core.security import get_password_hash
+    from src.models.user import User
+
+    _, user_role = seed_roles
+    user = User(
+        username="existing",
+        email="existing@pivot.com",
+        hashed_password=get_password_hash("test1234"),
+        role_id=user_role.id,
+        is_active=True,
+    )
+    db.add(user)
+    db.commit()
+
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "username": "existing",
+            "email": "another@pivot.com",
+            "password": "test1234",
+            "confirm_password": "test1234",
+        },
+    )
+    assert response.status_code == 409
+    assert "用户名已存在" in response.json()["detail"]
+
+
+def test_register_duplicate_email(client, db, seed_roles):
+    from src.core.security import get_password_hash
+    from src.models.user import User
+
+    _, user_role = seed_roles
+    user = User(
+        username="existing",
+        email="existing@pivot.com",
+        hashed_password=get_password_hash("test1234"),
+        role_id=user_role.id,
+        is_active=True,
+    )
+    db.add(user)
+    db.commit()
+
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "username": "another",
+            "email": "existing@pivot.com",
+            "password": "test1234",
+            "confirm_password": "test1234",
+        },
+    )
+    assert response.status_code == 409
+    assert "邮箱已存在" in response.json()["detail"]
+
+
+def test_register_password_mismatch(client, seed_roles):
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "username": "newuser",
+            "email": "newuser@pivot.com",
+            "password": "test1234",
+            "confirm_password": "different",
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_register_weak_password(client, seed_roles):
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "username": "newuser",
+            "email": "newuser@pivot.com",
+            "password": "12345678",
+            "confirm_password": "12345678",
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_register_short_password(client, seed_roles):
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "username": "newuser",
+            "email": "newuser@pivot.com",
+            "password": "ab12",
+            "confirm_password": "ab12",
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_register_user_role_is_user(client, db, seed_roles):
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "username": "rolecheck",
+            "email": "rolecheck@pivot.com",
+            "password": "test1234",
+            "confirm_password": "test1234",
+        },
+    )
+    assert response.status_code == 200
+
+    from src.models.user import User
+
+    user = db.query(User).filter(User.username == "rolecheck").first()
+    assert user is not None
+    assert user.role.name == "user"
+    assert user.is_active is True
+
+
+def test_register_then_login(client, seed_roles):
+    client.post(
+        "/api/auth/register",
+        json={
+            "username": "logintest",
+            "email": "logintest@pivot.com",
+            "password": "test1234",
+            "confirm_password": "test1234",
+        },
+    )
+    login_resp = client.post(
+        "/api/auth/login",
+        json={"username": "logintest", "password": "test1234"},
+    )
+    assert login_resp.status_code == 200
+    assert login_resp.json()["user"]["role"] == "user"
