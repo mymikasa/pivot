@@ -1,0 +1,14 @@
+grpc:
+  addr: ":9090"
+http:
+  addr: ":8081"
+db:
+  dsn: "pivot:pivot_pass_2026@tcp(localhost:3306)/pivot?charset=utf8mb4&parseTime=True&loc=Local"
+log:
+  level: "INFO"
+jwt:
+  access_ttl: 15m
+  refresh_ttl: 168h
+  issuer: pivot
+  audience: user
+  # secret 走环境变量 PIVOT_USER_JWT_SECRET，不进 yaml

@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package pivot.user.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/mymikasa/pivot/api/gen/user/v1;userv1";
+
+// UserService manages users.
+service UserService {
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users/login"
+      body: "*"
+    };
+  }
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users/logout"
+      body: "*"
+    };
+  }
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users/refresh"
+      body: "*"
+    };
+  }
+  rpc GetAllUser(GetAllUserRequest) returns (GetAllUserResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users"
+    };
+  }
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+message LogoutRequest {}
+message LogoutResponse {}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+}
+
+message GetAllUserRequest {}
+
+message GetAllUserResponse {
+  repeated User users = 1;
+}
+
+message User {
+  int64 id = 1;
+  string username = 2;
+  string email = 3;
+  bool is_active = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
