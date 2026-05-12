@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+package pivot.kb.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/mymikasa/pivot/api/gen/kb/v1;kbv1";
+
+// KnowledgeBaseService manages knowledge bases and documents.
+service KnowledgeBaseService {
+  // Knowledge base CRUD
+  rpc CreateKnowledgeBase(CreateKnowledgeBaseRequest) returns (CreateKnowledgeBaseResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/kb"
+      body: "*"
+    };
+  }
+  rpc ListKnowledgeBases(ListKnowledgeBasesRequest) returns (ListKnowledgeBasesResponse) {
+    option (google.api.http) = { get: "/api/v1/kb" };
+  }
+  rpc GetKnowledgeBase(GetKnowledgeBaseRequest) returns (GetKnowledgeBaseResponse) {
+    option (google.api.http) = { get: "/api/v1/kb/{id}" };
+  }
+  rpc UpdateKnowledgeBase(UpdateKnowledgeBaseRequest) returns (UpdateKnowledgeBaseResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/kb/{id}/update"
+      body: "*"
+    };
+  }
+  rpc DeleteKnowledgeBase(DeleteKnowledgeBaseRequest) returns (DeleteKnowledgeBaseResponse) {
+    option (google.api.http) = { post: "/api/v1/kb/{id}/delete" };
+  }
+
+  // Document management (streaming — gRPC only, no HTTP gateway)
+  rpc UploadDocument(stream UploadDocumentRequest) returns (UploadDocumentResponse);
+  rpc DownloadDocument(DownloadDocumentRequest) returns (stream DownloadDocumentResponse);
+
+  // Document management (unary — exposed via HTTP gateway)
+  rpc UploadDocumentSimple(UploadDocumentSimpleRequest) returns (UploadDocumentResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/kb/{kb_id}/documents/upload"
+      body: "*"
+    };
+  }
+  rpc DownloadDocumentSimple(DownloadDocumentRequest) returns (DownloadDocumentSimpleResponse) {
+    option (google.api.http) = { get: "/api/v1/kb/{kb_id}/documents/{doc_id}/download" };
+  }
+
+  rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse) {
+    option (google.api.http) = { get: "/api/v1/kb/{kb_id}/documents" };
+  }
+  rpc DeleteDocument(DeleteDocumentRequest) returns (DeleteDocumentResponse) {
+    option (google.api.http) = { post: "/api/v1/kb/{kb_id}/documents/{doc_id}/delete" };
+  }
+}
+
+// --- Knowledge base messages ---
+
+message KnowledgeBase {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  int64 owner_id = 4;
+  int32 document_count = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message CreateKnowledgeBaseRequest {
+  string name = 1;
+  string description = 2;
+}
+
+message CreateKnowledgeBaseResponse {
+  KnowledgeBase kb = 1;
+}
+
+message ListKnowledgeBasesRequest {}
+
+message ListKnowledgeBasesResponse {
+  repeated KnowledgeBase items = 1;
+}
+
+message GetKnowledgeBaseRequest {
+  int64 id = 1;
+}
+
+message GetKnowledgeBaseResponse {
+  KnowledgeBase kb = 1;
+}
+
+message UpdateKnowledgeBaseRequest {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message UpdateKnowledgeBaseResponse {
+  KnowledgeBase kb = 1;
+}
+
+message DeleteKnowledgeBaseRequest {
+  int64 id = 1;
+}
+
+message DeleteKnowledgeBaseResponse {}
+
+// --- Document messages ---
+
+message Document {
+  int64 id = 1;
+  int64 kb_id = 2;
+  string filename = 3;
+  string content_type = 4;
+  int32 file_size = 5;
+  string status = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message UploadDocumentRequest {
+  int64 kb_id = 1;
+  string filename = 2;
+  string content_type = 3;
+  bytes data = 4;
+}
+
+message UploadDocumentResponse {
+  Document document = 1;
+}
+
+message ListDocumentsRequest {
+  int64 kb_id = 1;
+}
+
+message ListDocumentsResponse {
+  repeated Document items = 1;
+}
+
+message DeleteDocumentRequest {
+  int64 kb_id = 1;
+  int64 doc_id = 2;
+}
+
+message DeleteDocumentResponse {}
+
+message DownloadDocumentRequest {
+  int64 kb_id = 1;
+  int64 doc_id = 2;
+}
+
+message DownloadDocumentResponse {
+  string filename = 1;
+  string content_type = 2;
+  bytes data = 3;
+}
+
+message UploadDocumentSimpleRequest {
+  int64 kb_id = 1;
+  string filename = 2;
+  string content_type = 3;
+  bytes data = 4;
+}
+
+message DownloadDocumentSimpleResponse {
+  string filename = 1;
+  string content_type = 2;
+  bytes data = 3;
+}

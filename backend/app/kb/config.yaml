@@ -1,7 +1,7 @@
 grpc:
-  addr: ":9090"
+  addr: ":9091"
 http:
-  addr: ":8081"
+  addr: ":8082"
 db:
   dsn: "pivot:pivot_pass_2026@tcp(localhost:3306)/pivot?charset=utf8mb4&parseTime=True&loc=Local"
 log:
@@ -12,3 +12,8 @@ jwt:
   issuer: pivot
   audience: user
   secret: "pivot-dev-jwt-secret-2026-change-in-prod"
+minio:
+  endpoint: "localhost:9000"
+  bucket: "pivot"
+  region: "us-east-1"
+  # access_key / secret_key 走环境变量 PIVOT_KB_MINIO_ACCESS_KEY / PIVOT_KB_MINIO_SECRET_KEY

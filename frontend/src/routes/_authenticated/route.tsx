@@ -143,7 +143,9 @@ function SidebarContent({
           概览
         </NavButton>
 
-        <NavDisabled
+        <NavButton
+          to="/kb"
+          active={pathname.startsWith("/kb")}
           icon={
             <svg
               width="18"
@@ -162,7 +164,7 @@ function SidebarContent({
           }
         >
           知识库
-        </NavDisabled>
+        </NavButton>
 
         <NavDisabled
           icon={

@@ -19,4 +19,4 @@ plugins:
     out: api/gen/openapi
     opt:
       - allow_merge=true
-      - merge_file_name=user-v1
+      - merge_file_name=pivot-v1
