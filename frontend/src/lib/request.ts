@@ -65,10 +65,11 @@ request.interceptors.response.use(
       }
 
       try {
-        const { data } = await axios.post("/api/auth/refresh", {
+        const { data } = await axios.post("/api/v1/users/refresh", {
           refresh_token: refreshToken,
         })
-        setTokens(data.access_token, data.refresh_token)
+        // m-jwt skill 默认 refresh 不 rotate，后端仅返回新 access；本地 refresh 沿用旧值
+        setTokens(data.access_token, refreshToken)
         processQueue(null, data.access_token)
         originalRequest.headers.Authorization = `Bearer ${data.access_token}`
         return request(originalRequest)
