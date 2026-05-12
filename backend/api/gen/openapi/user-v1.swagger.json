@@ -102,6 +102,28 @@
         ]
       }
     },
+    "/api/v1/users/me": {
+      "get": {
+        "operationId": "UserService_GetCurrentUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetCurrentUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
     "/api/v1/users/refresh": {
       "post": {
         "operationId": "UserService_RefreshToken",
@@ -126,6 +148,38 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/v1RefreshTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users/register": {
+      "post": {
+        "operationId": "UserService_Register",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RegisterResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RegisterRequest"
             }
           }
         ],
@@ -176,6 +230,14 @@
         }
       }
     },
+    "v1GetCurrentUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
     "v1LoginRequest": {
       "type": "object",
       "properties": {
@@ -195,6 +257,12 @@
         },
         "refreshToken": {
           "type": "string"
+        },
+        "tokenType": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/v1User"
         }
       }
     },
@@ -220,6 +288,28 @@
         }
       }
     },
+    "v1RegisterRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "v1RegisterResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1User": {
       "type": "object",
       "properties": {
@@ -239,6 +329,9 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "role": {
+          "type": "string"
         }
       }
     }

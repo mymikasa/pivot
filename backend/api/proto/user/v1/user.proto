@@ -9,6 +9,12 @@ option go_package = "github.com/mymikasa/pivot/api/gen/user/v1;userv1";
 
 // UserService manages users.
 service UserService {
+  rpc Register(RegisterRequest) returns (RegisterResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users/register"
+      body: "*"
+    };
+  }
   rpc Login(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
       post: "/api/v1/users/login"
@@ -27,11 +33,26 @@ service UserService {
       body: "*"
     };
   }
+  rpc GetCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users/me"
+    };
+  }
   rpc GetAllUser(GetAllUserRequest) returns (GetAllUserResponse) {
     option (google.api.http) = {
       get: "/api/v1/users"
     };
   }
+}
+
+message RegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message RegisterResponse {
+  string message = 1;
 }
 
 message LoginRequest {
@@ -42,6 +63,8 @@ message LoginRequest {
 message LoginResponse {
   string access_token = 1;
   string refresh_token = 2;
+  string token_type = 3;
+  User user = 4;
 }
 
 message LogoutRequest {}
@@ -53,6 +76,11 @@ message RefreshTokenRequest {
 
 message RefreshTokenResponse {
   string access_token = 1;
+}
+
+message GetCurrentUserRequest {}
+message GetCurrentUserResponse {
+  User user = 1;
 }
 
 message GetAllUserRequest {}
@@ -67,4 +95,5 @@ message User {
   string email = 3;
   bool is_active = 4;
   google.protobuf.Timestamp created_at = 5;
+  string role = 6;
 }

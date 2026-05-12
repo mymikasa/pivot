@@ -19,6 +19,10 @@ func toGRPCError(err error) error {
 		return status.Error(codes.PermissionDenied, "user inactive")
 	case errors.Is(err, domain.ErrUnauthenticated):
 		return status.Error(codes.Unauthenticated, "unauthenticated")
+	case errors.Is(err, domain.ErrUserExists):
+		return status.Error(codes.AlreadyExists, "username or email already exists")
+	case errors.Is(err, domain.ErrRoleNotFound):
+		return status.Error(codes.Internal, "default role not configured")
 	default:
 		return status.Error(codes.Internal, "internal error")
 	}

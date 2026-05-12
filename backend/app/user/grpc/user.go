@@ -10,6 +10,8 @@ import (
 	"github.com/mymikasa/pivot/app/user/service"
 )
 
+const tokenTypeBearer = "Bearer"
+
 type UserServer struct {
 	userv1.UnimplementedUserServiceServer
 	svc service.Service
@@ -19,14 +21,23 @@ func NewUserServer(svc service.Service) *UserServer {
 	return &UserServer{svc: svc}
 }
 
+func (g *UserServer) Register(ctx context.Context, req *userv1.RegisterRequest) (*userv1.RegisterResponse, error) {
+	if err := g.svc.Register(ctx, req.GetUsername(), req.GetEmail(), req.GetPassword()); err != nil {
+		return nil, toGRPCError(err)
+	}
+	return &userv1.RegisterResponse{Message: "registered"}, nil
+}
+
 func (g *UserServer) Login(ctx context.Context, req *userv1.LoginRequest) (*userv1.LoginResponse, error) {
-	access, refresh, err := g.svc.Login(ctx, req.GetUsername(), req.GetPassword())
+	access, refresh, user, err := g.svc.Login(ctx, req.GetUsername(), req.GetPassword())
 	if err != nil {
 		return nil, toGRPCError(err)
 	}
 	return &userv1.LoginResponse{
 		AccessToken:  access,
 		RefreshToken: refresh,
+		TokenType:    tokenTypeBearer,
+		User:         toProto(user),
 	}, nil
 }
 
@@ -43,6 +54,14 @@ func (g *UserServer) RefreshToken(ctx context.Context, req *userv1.RefreshTokenR
 		return nil, toGRPCError(err)
 	}
 	return &userv1.RefreshTokenResponse{AccessToken: access}, nil
+}
+
+func (g *UserServer) GetCurrentUser(ctx context.Context, _ *userv1.GetCurrentUserRequest) (*userv1.GetCurrentUserResponse, error) {
+	user, err := g.svc.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, toGRPCError(err)
+	}
+	return &userv1.GetCurrentUserResponse{User: toProto(user)}, nil
 }
 
 func (g *UserServer) GetAllUser(ctx context.Context, _ *userv1.GetAllUserRequest) (*userv1.GetAllUserResponse, error) {
@@ -64,5 +83,6 @@ func toProto(u domain.User) *userv1.User {
 		Email:     u.Email,
 		IsActive:  u.IsActive,
 		CreatedAt: timestamppb.New(u.CreatedAt),
+		Role:      u.Role,
 	}
 }

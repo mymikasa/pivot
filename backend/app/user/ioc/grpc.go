@@ -10,10 +10,11 @@ import (
 )
 
 var authWhitelist = map[string]struct{}{
-	"/pivot.user.v1.UserService/Login":                                            {},
-	"/pivot.user.v1.UserService/RefreshToken":                                     {},
-	"/grpc.reflection.v1.ServerReflection/ServerReflectionInfo":                   {},
-	"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo":              {},
+	"/pivot.user.v1.UserService/Register":                            {},
+	"/pivot.user.v1.UserService/Login":                               {},
+	"/pivot.user.v1.UserService/RefreshToken":                        {},
+	"/grpc.reflection.v1.ServerReflection/ServerReflectionInfo":      {},
+	"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo": {},
 }
 
 func InitGRPCServer(svc *usergrpc.UserServer, v *jwtpkg.Verifier) *grpc.Server {

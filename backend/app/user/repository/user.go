@@ -27,6 +27,14 @@ func (r *UserRepository) FindAll(ctx context.Context) ([]domain.User, error) {
 	return users, nil
 }
 
+func (r *UserRepository) FindByID(ctx context.Context, id int64) (domain.User, error) {
+	row, err := r.dao.FindByID(ctx, id)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return toDomain(row), nil
+}
+
 func (r *UserRepository) FindByUsername(ctx context.Context, username string) (domain.User, error) {
 	row, err := r.dao.FindByUsername(ctx, username)
 	if err != nil {
@@ -35,12 +43,31 @@ func (r *UserRepository) FindByUsername(ctx context.Context, username string) (d
 	return toDomain(row), nil
 }
 
+func (r *UserRepository) FindRoleIDByName(ctx context.Context, name string) (int64, error) {
+	return r.dao.FindRoleIDByName(ctx, name)
+}
+
+func (r *UserRepository) Create(ctx context.Context, in domain.NewUserInput) (int64, error) {
+	return r.dao.Create(ctx, dao.User{
+		Username:       in.Username,
+		Email:          in.Email,
+		HashedPassword: in.HashedPassword,
+		RoleID:         in.RoleID,
+		IsActive:       true,
+	})
+}
+
+func (r *UserRepository) UsernameOrEmailExists(ctx context.Context, username, email string) (bool, error) {
+	return r.dao.UsernameOrEmailExists(ctx, username, email)
+}
+
 func toDomain(u dao.User) domain.User {
 	return domain.User{
 		ID:             u.ID,
 		Username:       u.Username,
 		Email:          u.Email,
 		HashedPassword: u.HashedPassword,
+		Role:           u.RoleName,
 		IsActive:       u.IsActive,
 		CreatedAt:      u.CreatedAt,
 	}
