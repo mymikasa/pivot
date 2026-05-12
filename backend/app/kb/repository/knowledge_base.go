@@ -24,7 +24,10 @@ func (r *KbRepository) FindAllKB(ctx context.Context) ([]domain.KnowledgeBase, e
 	}
 	items := make([]domain.KnowledgeBase, 0, len(rows))
 	for _, row := range rows {
-		items = append(items, toDomainKB(row))
+		kb := toDomainKB(row)
+		count, _ := r.dao.CountDocumentsByKB(ctx, row.ID)
+		kb.DocumentCount = count
+		items = append(items, kb)
 	}
 	return items, nil
 }
