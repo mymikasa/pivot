@@ -204,6 +204,85 @@
         ]
       }
     },
+    "/api/v1/kb/{kbId}/documents/confirm-upload": {
+      "post": {
+        "operationId": "KnowledgeBaseService_ConfirmDocumentUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ConfirmDocumentUploadResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "kbId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/KnowledgeBaseServiceConfirmDocumentUploadBody"
+            }
+          }
+        ],
+        "tags": [
+          "KnowledgeBaseService"
+        ]
+      }
+    },
+    "/api/v1/kb/{kbId}/documents/prepare-upload": {
+      "post": {
+        "summary": "Presigned URL upload/download",
+        "operationId": "KnowledgeBaseService_PrepareDocumentUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PrepareDocumentUploadResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "kbId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/KnowledgeBaseServicePrepareDocumentUploadBody"
+            }
+          }
+        ],
+        "tags": [
+          "KnowledgeBaseService"
+        ]
+      }
+    },
     "/api/v1/kb/{kbId}/documents/upload": {
       "post": {
         "summary": "Document management (unary — exposed via HTTP gateway)",
@@ -290,6 +369,44 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/v1DownloadDocumentSimpleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "kbId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "docId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "KnowledgeBaseService"
+        ]
+      }
+    },
+    "/api/v1/kb/{kbId}/documents/{docId}/download-url": {
+      "get": {
+        "operationId": "KnowledgeBaseService_GetDocumentDownloadURL",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetDocumentDownloadURLResponse"
             }
           },
           "default": {
@@ -494,6 +611,39 @@
     }
   },
   "definitions": {
+    "KnowledgeBaseServiceConfirmDocumentUploadBody": {
+      "type": "object",
+      "properties": {
+        "objectKey": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "contentType": {
+          "type": "string"
+        },
+        "fileSize": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "KnowledgeBaseServicePrepareDocumentUploadBody": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string"
+        },
+        "contentType": {
+          "type": "string"
+        },
+        "fileSize": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "KnowledgeBaseServiceUpdateKnowledgeBaseBody": {
       "type": "object",
       "properties": {
@@ -545,6 +695,14 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "v1ConfirmDocumentUploadResponse": {
+      "type": "object",
+      "properties": {
+        "document": {
+          "$ref": "#/definitions/v1Document"
         }
       }
     },
@@ -635,6 +793,20 @@
       "properties": {
         "user": {
           "$ref": "#/definitions/v1User"
+        }
+      }
+    },
+    "v1GetDocumentDownloadURLResponse": {
+      "type": "object",
+      "properties": {
+        "downloadUrl": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "contentType": {
+          "type": "string"
         }
       }
     },
@@ -734,6 +906,17 @@
     },
     "v1LogoutResponse": {
       "type": "object"
+    },
+    "v1PrepareDocumentUploadResponse": {
+      "type": "object",
+      "properties": {
+        "objectKey": {
+          "type": "string"
+        },
+        "uploadUrl": {
+          "type": "string"
+        }
+      }
     },
     "v1RefreshTokenRequest": {
       "type": "object",

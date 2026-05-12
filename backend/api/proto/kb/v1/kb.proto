@@ -53,6 +53,23 @@ service KnowledgeBaseService {
   rpc DeleteDocument(DeleteDocumentRequest) returns (DeleteDocumentResponse) {
     option (google.api.http) = { post: "/api/v1/kb/{kb_id}/documents/{doc_id}/delete" };
   }
+
+  // Presigned URL upload/download
+  rpc PrepareDocumentUpload(PrepareDocumentUploadRequest) returns (PrepareDocumentUploadResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/kb/{kb_id}/documents/prepare-upload"
+      body: "*"
+    };
+  }
+  rpc ConfirmDocumentUpload(ConfirmDocumentUploadRequest) returns (ConfirmDocumentUploadResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/kb/{kb_id}/documents/confirm-upload"
+      body: "*"
+    };
+  }
+  rpc GetDocumentDownloadURL(GetDocumentDownloadURLRequest) returns (GetDocumentDownloadURLResponse) {
+    option (google.api.http) = { get: "/api/v1/kb/{kb_id}/documents/{doc_id}/download-url" };
+  }
 }
 
 // --- Knowledge base messages ---
@@ -166,4 +183,41 @@ message DownloadDocumentSimpleResponse {
   string filename = 1;
   string content_type = 2;
   bytes data = 3;
+}
+
+// --- Presigned URL messages ---
+
+message PrepareDocumentUploadRequest {
+  int64 kb_id = 1;
+  string filename = 2;
+  string content_type = 3;
+  int64 file_size = 4;
+}
+
+message PrepareDocumentUploadResponse {
+  string object_key = 1;
+  string upload_url = 2;
+}
+
+message ConfirmDocumentUploadRequest {
+  int64 kb_id = 1;
+  string object_key = 2;
+  string filename = 3;
+  string content_type = 4;
+  int64 file_size = 5;
+}
+
+message ConfirmDocumentUploadResponse {
+  Document document = 1;
+}
+
+message GetDocumentDownloadURLRequest {
+  int64 kb_id = 1;
+  int64 doc_id = 2;
+}
+
+message GetDocumentDownloadURLResponse {
+  string download_url = 1;
+  string filename = 2;
+  string content_type = 3;
 }

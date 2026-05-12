@@ -9,6 +9,8 @@ import (
 	jwtpkg "github.com/mymikasa/pivot/pkg/jwt"
 )
 
+const maxMsgSize = 32 * 1024 * 1024 // 32MB
+
 var authWhitelist = map[string]struct{}{
 	"/grpc.reflection.v1.ServerReflection/ServerReflectionInfo":      {},
 	"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo": {},
@@ -16,6 +18,8 @@ var authWhitelist = map[string]struct{}{
 
 func InitGRPCServer(svc *kbgrpc.KbServer, v *jwtpkg.Verifier) *grpc.Server {
 	s := grpc.NewServer(
+		grpc.MaxRecvMsgSize(maxMsgSize),
+		grpc.MaxSendMsgSize(maxMsgSize),
 		grpc.UnaryInterceptor(jwtpkg.UnaryAuth(v, authWhitelist)),
 		grpc.StreamInterceptor(jwtpkg.StreamAuth(v, authWhitelist)),
 	)

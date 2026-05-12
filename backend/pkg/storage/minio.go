@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/http"
+	"time"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -54,4 +56,32 @@ func (m *MinIO) Download(ctx context.Context, key string) (io.ReadCloser, error)
 
 func (m *MinIO) Delete(ctx context.Context, key string) error {
 	return m.client.RemoveObject(ctx, m.bucket, key, minio.RemoveObjectOptions{})
+}
+
+func (m *MinIO) PresignedPutObject(ctx context.Context, key string, expires time.Duration) (string, error) {
+	u, err := m.client.PresignedPutObject(ctx, m.bucket, key, expires)
+	if err != nil {
+		return "", fmt.Errorf("presigned put: %w", err)
+	}
+	return u.String(), nil
+}
+
+func (m *MinIO) PresignedGetObject(ctx context.Context, key string, expires time.Duration) (string, error) {
+	u, err := m.client.PresignedGetObject(ctx, m.bucket, key, expires, nil)
+	if err != nil {
+		return "", fmt.Errorf("presigned get: %w", err)
+	}
+	return u.String(), nil
+}
+
+func (m *MinIO) ObjectExists(ctx context.Context, key string) (bool, error) {
+	_, err := m.client.StatObject(ctx, m.bucket, key, minio.StatObjectOptions{})
+	if err != nil {
+		resp := minio.ToErrorResponse(err)
+		if resp.StatusCode == http.StatusNotFound {
+			return false, nil
+		}
+		return false, fmt.Errorf("stat object: %w", err)
+	}
+	return true, nil
 }

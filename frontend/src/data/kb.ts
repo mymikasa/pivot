@@ -2,14 +2,16 @@ import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query
 import { isAxiosError } from "axios"
 
 import {
+  knowledgeBaseServiceConfirmDocumentUpload,
   knowledgeBaseServiceCreateKnowledgeBase,
   knowledgeBaseServiceDeleteDocument,
   knowledgeBaseServiceDeleteKnowledgeBase,
+  knowledgeBaseServiceGetDocumentDownloadUrl,
   knowledgeBaseServiceGetKnowledgeBase,
   knowledgeBaseServiceListDocuments,
   knowledgeBaseServiceListKnowledgeBases,
+  knowledgeBaseServicePrepareDocumentUpload,
   knowledgeBaseServiceUpdateKnowledgeBase,
-  knowledgeBaseServiceUploadDocumentSimple,
 } from "@/lib/api-generated/sdk.gen"
 
 import type {
@@ -20,7 +22,9 @@ import type {
   V1ListDocumentsResponse,
   V1CreateKnowledgeBaseResponse,
   V1UpdateKnowledgeBaseResponse,
-  V1UploadDocumentResponse,
+  V1PrepareDocumentUploadResponse,
+  V1ConfirmDocumentUploadResponse,
+  V1GetDocumentDownloadUrlResponse,
   RpcStatus,
 } from "@/lib/api-generated/types.gen"
 
@@ -79,6 +83,29 @@ export function documentListOptions(kbId: string) {
       return unwrap<V1ListDocumentsResponse>(
         await knowledgeBaseServiceListDocuments({ path: { kbId } }),
       )
+    },
+  })
+}
+
+export function documentPreviewOptions(kbId: string, docId: string) {
+  return queryOptions({
+    queryKey: ["kb", kbId, "documents", docId, "download-url"],
+    queryFn: async () => {
+      const raw = unwrap<
+        V1GetDocumentDownloadUrlResponse & {
+          download_url?: string
+          content_type?: string
+        }
+      >(
+        await knowledgeBaseServiceGetDocumentDownloadUrl({
+          path: { kbId, docId },
+        }),
+      )
+      return {
+        downloadUrl: raw.downloadUrl ?? raw.download_url ?? "",
+        filename: raw.filename ?? "",
+        contentType: raw.contentType ?? raw.content_type ?? "",
+      }
     },
   })
 }
@@ -144,18 +171,47 @@ export function useUploadDocumentMutation(kbId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (file: File) => {
-      const base64Data = await fileToBase64(file)
-      const data = unwrap<V1UploadDocumentResponse>(
-        await knowledgeBaseServiceUploadDocumentSimple({
+      // Step 1: Prepare — get presigned upload URL + object key
+      const rawPrepare = unwrap<
+        V1PrepareDocumentUploadResponse & {
+          object_key?: string
+          upload_url?: string
+        }
+      >(
+        await knowledgeBaseServicePrepareDocumentUpload({
           path: { kbId },
           body: {
             filename: file.name,
             contentType: file.type || "application/octet-stream",
-            data: base64Data,
+            fileSize: String(file.size),
           },
         }),
       )
-      return data.document
+      const objectKey =
+        rawPrepare.objectKey ?? rawPrepare.object_key ?? ""
+      const uploadUrl = rawPrepare.uploadUrl ?? rawPrepare.upload_url ?? ""
+
+      // Step 2: PUT file directly to MinIO
+      const putResp = await fetch(uploadUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+      })
+      if (!putResp.ok) throw new Error("Upload to storage failed")
+
+      // Step 3: Confirm — create DB record (ready)
+      const confirm = unwrap<V1ConfirmDocumentUploadResponse>(
+        await knowledgeBaseServiceConfirmDocumentUpload({
+          path: { kbId },
+          body: {
+            objectKey,
+            filename: file.name,
+            contentType: file.type || "application/octet-stream",
+            fileSize: String(file.size),
+          },
+        }),
+      )
+      return confirm.document
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({
@@ -188,20 +244,5 @@ export function useDeleteDocumentMutation(kbId: string) {
         queryKey: ["kb", "detail", kbId],
       })
     },
-  })
-}
-
-// --- Helpers ---
-
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const result = reader.result as string
-      const base64 = result.split(",")[1] ?? ""
-      resolve(base64)
-    }
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
   })
 }

@@ -173,3 +173,38 @@ func toProtoDocument(doc domain.Document) *kbv1.Document {
 		CreatedAt:   timestamppb.New(doc.CreatedAt),
 	}
 }
+
+// --- Presigned URL ---
+
+func (g *KbServer) PrepareDocumentUpload(ctx context.Context, req *kbv1.PrepareDocumentUploadRequest) (*kbv1.PrepareDocumentUploadResponse, error) {
+	objectKey, uploadURL, err := g.svc.PrepareDocumentUpload(ctx, req.GetKbId(), req.GetFilename(), req.GetContentType(), req.GetFileSize())
+	if err != nil {
+		return nil, toGRPCError(err)
+	}
+	return &kbv1.PrepareDocumentUploadResponse{
+		ObjectKey: objectKey,
+		UploadUrl: uploadURL,
+	}, nil
+}
+
+func (g *KbServer) ConfirmDocumentUpload(ctx context.Context, req *kbv1.ConfirmDocumentUploadRequest) (*kbv1.ConfirmDocumentUploadResponse, error) {
+	doc, err := g.svc.ConfirmDocumentUpload(ctx, req.GetKbId(), req.GetObjectKey(), req.GetFilename(), req.GetContentType(), req.GetFileSize())
+	if err != nil {
+		return nil, toGRPCError(err)
+	}
+	return &kbv1.ConfirmDocumentUploadResponse{
+		Document: toProtoDocument(doc),
+	}, nil
+}
+
+func (g *KbServer) GetDocumentDownloadURL(ctx context.Context, req *kbv1.GetDocumentDownloadURLRequest) (*kbv1.GetDocumentDownloadURLResponse, error) {
+	url, doc, err := g.svc.GetDocumentDownloadURL(ctx, req.GetKbId(), req.GetDocId())
+	if err != nil {
+		return nil, toGRPCError(err)
+	}
+	return &kbv1.GetDocumentDownloadURLResponse{
+		DownloadUrl: url,
+		Filename:    doc.Filename,
+		ContentType: doc.ContentType,
+	}, nil
+}

@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { KnowledgeBaseServiceCreateKnowledgeBaseData, KnowledgeBaseServiceCreateKnowledgeBaseErrors, KnowledgeBaseServiceCreateKnowledgeBaseResponses, KnowledgeBaseServiceDeleteDocumentData, KnowledgeBaseServiceDeleteDocumentErrors, KnowledgeBaseServiceDeleteDocumentResponses, KnowledgeBaseServiceDeleteKnowledgeBaseData, KnowledgeBaseServiceDeleteKnowledgeBaseErrors, KnowledgeBaseServiceDeleteKnowledgeBaseResponses, KnowledgeBaseServiceDownloadDocumentSimpleData, KnowledgeBaseServiceDownloadDocumentSimpleErrors, KnowledgeBaseServiceDownloadDocumentSimpleResponses, KnowledgeBaseServiceGetKnowledgeBaseData, KnowledgeBaseServiceGetKnowledgeBaseErrors, KnowledgeBaseServiceGetKnowledgeBaseResponses, KnowledgeBaseServiceListDocumentsData, KnowledgeBaseServiceListDocumentsErrors, KnowledgeBaseServiceListDocumentsResponses, KnowledgeBaseServiceListKnowledgeBasesData, KnowledgeBaseServiceListKnowledgeBasesErrors, KnowledgeBaseServiceListKnowledgeBasesResponses, KnowledgeBaseServiceUpdateKnowledgeBaseData, KnowledgeBaseServiceUpdateKnowledgeBaseErrors, KnowledgeBaseServiceUpdateKnowledgeBaseResponses, KnowledgeBaseServiceUploadDocumentSimpleData, KnowledgeBaseServiceUploadDocumentSimpleErrors, KnowledgeBaseServiceUploadDocumentSimpleResponses, UserServiceGetAllUserData, UserServiceGetAllUserErrors, UserServiceGetAllUserResponses, UserServiceGetCurrentUserData, UserServiceGetCurrentUserErrors, UserServiceGetCurrentUserResponses, UserServiceLoginData, UserServiceLoginErrors, UserServiceLoginResponses, UserServiceLogoutData, UserServiceLogoutErrors, UserServiceLogoutResponses, UserServiceRefreshTokenData, UserServiceRefreshTokenErrors, UserServiceRefreshTokenResponses, UserServiceRegisterData, UserServiceRegisterErrors, UserServiceRegisterResponses } from './types.gen';
+import type { KnowledgeBaseServiceConfirmDocumentUploadData, KnowledgeBaseServiceConfirmDocumentUploadErrors, KnowledgeBaseServiceConfirmDocumentUploadResponses, KnowledgeBaseServiceCreateKnowledgeBaseData, KnowledgeBaseServiceCreateKnowledgeBaseErrors, KnowledgeBaseServiceCreateKnowledgeBaseResponses, KnowledgeBaseServiceDeleteDocumentData, KnowledgeBaseServiceDeleteDocumentErrors, KnowledgeBaseServiceDeleteDocumentResponses, KnowledgeBaseServiceDeleteKnowledgeBaseData, KnowledgeBaseServiceDeleteKnowledgeBaseErrors, KnowledgeBaseServiceDeleteKnowledgeBaseResponses, KnowledgeBaseServiceDownloadDocumentSimpleData, KnowledgeBaseServiceDownloadDocumentSimpleErrors, KnowledgeBaseServiceDownloadDocumentSimpleResponses, KnowledgeBaseServiceGetDocumentDownloadUrlData, KnowledgeBaseServiceGetDocumentDownloadUrlErrors, KnowledgeBaseServiceGetDocumentDownloadUrlResponses, KnowledgeBaseServiceGetKnowledgeBaseData, KnowledgeBaseServiceGetKnowledgeBaseErrors, KnowledgeBaseServiceGetKnowledgeBaseResponses, KnowledgeBaseServiceListDocumentsData, KnowledgeBaseServiceListDocumentsErrors, KnowledgeBaseServiceListDocumentsResponses, KnowledgeBaseServiceListKnowledgeBasesData, KnowledgeBaseServiceListKnowledgeBasesErrors, KnowledgeBaseServiceListKnowledgeBasesResponses, KnowledgeBaseServicePrepareDocumentUploadData, KnowledgeBaseServicePrepareDocumentUploadErrors, KnowledgeBaseServicePrepareDocumentUploadResponses, KnowledgeBaseServiceUpdateKnowledgeBaseData, KnowledgeBaseServiceUpdateKnowledgeBaseErrors, KnowledgeBaseServiceUpdateKnowledgeBaseResponses, KnowledgeBaseServiceUploadDocumentSimpleData, KnowledgeBaseServiceUploadDocumentSimpleErrors, KnowledgeBaseServiceUploadDocumentSimpleResponses, UserServiceGetAllUserData, UserServiceGetAllUserErrors, UserServiceGetAllUserResponses, UserServiceGetCurrentUserData, UserServiceGetCurrentUserErrors, UserServiceGetCurrentUserResponses, UserServiceLoginData, UserServiceLoginErrors, UserServiceLoginResponses, UserServiceLogoutData, UserServiceLogoutErrors, UserServiceLogoutResponses, UserServiceRefreshTokenData, UserServiceRefreshTokenErrors, UserServiceRefreshTokenResponses, UserServiceRegisterData, UserServiceRegisterErrors, UserServiceRegisterResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -65,6 +65,29 @@ export const knowledgeBaseServiceListDocuments = <ThrowOnError extends boolean =
     ...options
 });
 
+export const knowledgeBaseServiceConfirmDocumentUpload = <ThrowOnError extends boolean = false>(options: Options<KnowledgeBaseServiceConfirmDocumentUploadData, ThrowOnError>) => (options.client ?? client).post<KnowledgeBaseServiceConfirmDocumentUploadResponses, KnowledgeBaseServiceConfirmDocumentUploadErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/kb/{kbId}/documents/confirm-upload',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Presigned URL upload/download
+ */
+export const knowledgeBaseServicePrepareDocumentUpload = <ThrowOnError extends boolean = false>(options: Options<KnowledgeBaseServicePrepareDocumentUploadData, ThrowOnError>) => (options.client ?? client).post<KnowledgeBaseServicePrepareDocumentUploadResponses, KnowledgeBaseServicePrepareDocumentUploadErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/kb/{kbId}/documents/prepare-upload',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
 /**
  * Document management (unary — exposed via HTTP gateway)
  */
@@ -87,6 +110,12 @@ export const knowledgeBaseServiceDeleteDocument = <ThrowOnError extends boolean 
 export const knowledgeBaseServiceDownloadDocumentSimple = <ThrowOnError extends boolean = false>(options: Options<KnowledgeBaseServiceDownloadDocumentSimpleData, ThrowOnError>) => (options.client ?? client).get<KnowledgeBaseServiceDownloadDocumentSimpleResponses, KnowledgeBaseServiceDownloadDocumentSimpleErrors, ThrowOnError>({
     responseType: 'json',
     url: '/api/v1/kb/{kbId}/documents/{docId}/download',
+    ...options
+});
+
+export const knowledgeBaseServiceGetDocumentDownloadUrl = <ThrowOnError extends boolean = false>(options: Options<KnowledgeBaseServiceGetDocumentDownloadUrlData, ThrowOnError>) => (options.client ?? client).get<KnowledgeBaseServiceGetDocumentDownloadUrlResponses, KnowledgeBaseServiceGetDocumentDownloadUrlErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/kb/{kbId}/documents/{docId}/download-url',
     ...options
 });
 

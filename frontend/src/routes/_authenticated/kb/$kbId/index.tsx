@@ -12,7 +12,7 @@ import {
   useDeleteKBMutation,
 } from "@/data/kb"
 
-export const Route = createFileRoute("/_authenticated/kb/$kbId")({
+export const Route = createFileRoute("/_authenticated/kb/$kbId/")({
   component: KbDetailPage,
 })
 
@@ -226,9 +226,13 @@ function KbDetailPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
                       <FileIcon contentType={doc.content_type} />
-                      <span className="text-sm font-medium text-text-primary">
+                      <Link
+                        to="/kb/$kbId/$docId"
+                        params={{ kbId, docId: doc.id }}
+                        className="text-sm font-medium text-text-primary transition-colors hover:text-accent"
+                      >
                         {doc.filename}
-                      </span>
+                      </Link>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-text-secondary">

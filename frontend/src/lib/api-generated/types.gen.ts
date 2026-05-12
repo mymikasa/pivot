@@ -4,6 +4,19 @@ export type ClientOptions = {
     baseURL: string;
 };
 
+export type KnowledgeBaseServiceConfirmDocumentUploadBody = {
+    objectKey?: string;
+    filename?: string;
+    contentType?: string;
+    fileSize?: string;
+};
+
+export type KnowledgeBaseServicePrepareDocumentUploadBody = {
+    filename?: string;
+    contentType?: string;
+    fileSize?: string;
+};
+
 export type KnowledgeBaseServiceUpdateKnowledgeBaseBody = {
     name?: string;
     description?: string;
@@ -24,6 +37,10 @@ export type RpcStatus = {
     code?: number;
     message?: string;
     details?: Array<ProtobufAny>;
+};
+
+export type V1ConfirmDocumentUploadResponse = {
+    document?: V1Document;
 };
 
 export type V1CreateKnowledgeBaseRequest = {
@@ -67,6 +84,12 @@ export type V1GetCurrentUserResponse = {
     user?: V1User;
 };
 
+export type V1GetDocumentDownloadUrlResponse = {
+    downloadUrl?: string;
+    filename?: string;
+    contentType?: string;
+};
+
 export type V1GetKnowledgeBaseResponse = {
     kb?: V1KnowledgeBase;
 };
@@ -107,6 +130,11 @@ export type V1LogoutRequest = {
 
 export type V1LogoutResponse = {
     [key: string]: unknown;
+};
+
+export type V1PrepareDocumentUploadResponse = {
+    objectKey?: string;
+    uploadUrl?: string;
 };
 
 export type V1RefreshTokenRequest = {
@@ -302,6 +330,60 @@ export type KnowledgeBaseServiceListDocumentsResponses = {
 
 export type KnowledgeBaseServiceListDocumentsResponse = KnowledgeBaseServiceListDocumentsResponses[keyof KnowledgeBaseServiceListDocumentsResponses];
 
+export type KnowledgeBaseServiceConfirmDocumentUploadData = {
+    body: KnowledgeBaseServiceConfirmDocumentUploadBody;
+    path: {
+        kbId: string;
+    };
+    query?: never;
+    url: '/api/v1/kb/{kbId}/documents/confirm-upload';
+};
+
+export type KnowledgeBaseServiceConfirmDocumentUploadErrors = {
+    /**
+     * An unexpected error response.
+     */
+    default: RpcStatus;
+};
+
+export type KnowledgeBaseServiceConfirmDocumentUploadError = KnowledgeBaseServiceConfirmDocumentUploadErrors[keyof KnowledgeBaseServiceConfirmDocumentUploadErrors];
+
+export type KnowledgeBaseServiceConfirmDocumentUploadResponses = {
+    /**
+     * A successful response.
+     */
+    200: V1ConfirmDocumentUploadResponse;
+};
+
+export type KnowledgeBaseServiceConfirmDocumentUploadResponse = KnowledgeBaseServiceConfirmDocumentUploadResponses[keyof KnowledgeBaseServiceConfirmDocumentUploadResponses];
+
+export type KnowledgeBaseServicePrepareDocumentUploadData = {
+    body: KnowledgeBaseServicePrepareDocumentUploadBody;
+    path: {
+        kbId: string;
+    };
+    query?: never;
+    url: '/api/v1/kb/{kbId}/documents/prepare-upload';
+};
+
+export type KnowledgeBaseServicePrepareDocumentUploadErrors = {
+    /**
+     * An unexpected error response.
+     */
+    default: RpcStatus;
+};
+
+export type KnowledgeBaseServicePrepareDocumentUploadError = KnowledgeBaseServicePrepareDocumentUploadErrors[keyof KnowledgeBaseServicePrepareDocumentUploadErrors];
+
+export type KnowledgeBaseServicePrepareDocumentUploadResponses = {
+    /**
+     * A successful response.
+     */
+    200: V1PrepareDocumentUploadResponse;
+};
+
+export type KnowledgeBaseServicePrepareDocumentUploadResponse = KnowledgeBaseServicePrepareDocumentUploadResponses[keyof KnowledgeBaseServicePrepareDocumentUploadResponses];
+
 export type KnowledgeBaseServiceUploadDocumentSimpleData = {
     body: KnowledgeBaseServiceUploadDocumentSimpleBody;
     path: {
@@ -384,6 +466,34 @@ export type KnowledgeBaseServiceDownloadDocumentSimpleResponses = {
 };
 
 export type KnowledgeBaseServiceDownloadDocumentSimpleResponse = KnowledgeBaseServiceDownloadDocumentSimpleResponses[keyof KnowledgeBaseServiceDownloadDocumentSimpleResponses];
+
+export type KnowledgeBaseServiceGetDocumentDownloadUrlData = {
+    body?: never;
+    path: {
+        kbId: string;
+        docId: string;
+    };
+    query?: never;
+    url: '/api/v1/kb/{kbId}/documents/{docId}/download-url';
+};
+
+export type KnowledgeBaseServiceGetDocumentDownloadUrlErrors = {
+    /**
+     * An unexpected error response.
+     */
+    default: RpcStatus;
+};
+
+export type KnowledgeBaseServiceGetDocumentDownloadUrlError = KnowledgeBaseServiceGetDocumentDownloadUrlErrors[keyof KnowledgeBaseServiceGetDocumentDownloadUrlErrors];
+
+export type KnowledgeBaseServiceGetDocumentDownloadUrlResponses = {
+    /**
+     * A successful response.
+     */
+    200: V1GetDocumentDownloadUrlResponse;
+};
+
+export type KnowledgeBaseServiceGetDocumentDownloadUrlResponse = KnowledgeBaseServiceGetDocumentDownloadUrlResponses[keyof KnowledgeBaseServiceGetDocumentDownloadUrlResponses];
 
 export type UserServiceGetAllUserData = {
     body?: never;

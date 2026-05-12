@@ -26,9 +26,11 @@ func toGRPCError(err error) error {
 	case errors.Is(err, domain.ErrInvalidFileType):
 		return status.Error(codes.InvalidArgument, "unsupported file type")
 	case errors.Is(err, domain.ErrFileTooLarge):
-		return status.Error(codes.InvalidArgument, "file exceeds 10MB limit")
+		return status.Error(codes.InvalidArgument, "file exceeds 100MB limit")
 	case errors.Is(err, domain.ErrUploadFailed):
 		return status.Error(codes.Internal, "file upload failed")
+	case errors.Is(err, domain.ErrUploadNotConfirmed):
+		return status.Error(codes.FailedPrecondition, "upload not yet confirmed")
 	case errors.Is(err, io.EOF):
 		return nil
 	default:

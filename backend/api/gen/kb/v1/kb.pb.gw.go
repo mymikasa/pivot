@@ -400,6 +400,151 @@ func local_request_KnowledgeBaseService_DeleteDocument_0(ctx context.Context, ma
 	return msg, metadata, err
 }
 
+func request_KnowledgeBaseService_PrepareDocumentUpload_0(ctx context.Context, marshaler runtime.Marshaler, client KnowledgeBaseServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq PrepareDocumentUploadRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["kb_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "kb_id")
+	}
+	protoReq.KbId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "kb_id", err)
+	}
+	msg, err := client.PrepareDocumentUpload(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_KnowledgeBaseService_PrepareDocumentUpload_0(ctx context.Context, marshaler runtime.Marshaler, server KnowledgeBaseServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq PrepareDocumentUploadRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["kb_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "kb_id")
+	}
+	protoReq.KbId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "kb_id", err)
+	}
+	msg, err := server.PrepareDocumentUpload(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_KnowledgeBaseService_ConfirmDocumentUpload_0(ctx context.Context, marshaler runtime.Marshaler, client KnowledgeBaseServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ConfirmDocumentUploadRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["kb_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "kb_id")
+	}
+	protoReq.KbId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "kb_id", err)
+	}
+	msg, err := client.ConfirmDocumentUpload(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_KnowledgeBaseService_ConfirmDocumentUpload_0(ctx context.Context, marshaler runtime.Marshaler, server KnowledgeBaseServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ConfirmDocumentUploadRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["kb_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "kb_id")
+	}
+	protoReq.KbId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "kb_id", err)
+	}
+	msg, err := server.ConfirmDocumentUpload(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_KnowledgeBaseService_GetDocumentDownloadURL_0(ctx context.Context, marshaler runtime.Marshaler, client KnowledgeBaseServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GetDocumentDownloadURLRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["kb_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "kb_id")
+	}
+	protoReq.KbId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "kb_id", err)
+	}
+	val, ok = pathParams["doc_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "doc_id")
+	}
+	protoReq.DocId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "doc_id", err)
+	}
+	msg, err := client.GetDocumentDownloadURL(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_KnowledgeBaseService_GetDocumentDownloadURL_0(ctx context.Context, marshaler runtime.Marshaler, server KnowledgeBaseServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GetDocumentDownloadURLRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["kb_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "kb_id")
+	}
+	protoReq.KbId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "kb_id", err)
+	}
+	val, ok = pathParams["doc_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "doc_id")
+	}
+	protoReq.DocId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "doc_id", err)
+	}
+	msg, err := server.GetDocumentDownloadURL(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 // RegisterKnowledgeBaseServiceHandlerServer registers the http handlers for service KnowledgeBaseService to "mux".
 // UnaryRPC     :call KnowledgeBaseServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
@@ -585,6 +730,66 @@ func RegisterKnowledgeBaseServiceHandlerServer(ctx context.Context, mux *runtime
 			return
 		}
 		forward_KnowledgeBaseService_DeleteDocument_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_KnowledgeBaseService_PrepareDocumentUpload_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/pivot.kb.v1.KnowledgeBaseService/PrepareDocumentUpload", runtime.WithHTTPPathPattern("/api/v1/kb/{kb_id}/documents/prepare-upload"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_KnowledgeBaseService_PrepareDocumentUpload_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_KnowledgeBaseService_PrepareDocumentUpload_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_KnowledgeBaseService_ConfirmDocumentUpload_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/pivot.kb.v1.KnowledgeBaseService/ConfirmDocumentUpload", runtime.WithHTTPPathPattern("/api/v1/kb/{kb_id}/documents/confirm-upload"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_KnowledgeBaseService_ConfirmDocumentUpload_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_KnowledgeBaseService_ConfirmDocumentUpload_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_KnowledgeBaseService_GetDocumentDownloadURL_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/pivot.kb.v1.KnowledgeBaseService/GetDocumentDownloadURL", runtime.WithHTTPPathPattern("/api/v1/kb/{kb_id}/documents/{doc_id}/download-url"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_KnowledgeBaseService_GetDocumentDownloadURL_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_KnowledgeBaseService_GetDocumentDownloadURL_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
@@ -779,6 +984,57 @@ func RegisterKnowledgeBaseServiceHandlerClient(ctx context.Context, mux *runtime
 		}
 		forward_KnowledgeBaseService_DeleteDocument_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_KnowledgeBaseService_PrepareDocumentUpload_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/pivot.kb.v1.KnowledgeBaseService/PrepareDocumentUpload", runtime.WithHTTPPathPattern("/api/v1/kb/{kb_id}/documents/prepare-upload"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_KnowledgeBaseService_PrepareDocumentUpload_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_KnowledgeBaseService_PrepareDocumentUpload_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_KnowledgeBaseService_ConfirmDocumentUpload_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/pivot.kb.v1.KnowledgeBaseService/ConfirmDocumentUpload", runtime.WithHTTPPathPattern("/api/v1/kb/{kb_id}/documents/confirm-upload"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_KnowledgeBaseService_ConfirmDocumentUpload_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_KnowledgeBaseService_ConfirmDocumentUpload_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_KnowledgeBaseService_GetDocumentDownloadURL_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/pivot.kb.v1.KnowledgeBaseService/GetDocumentDownloadURL", runtime.WithHTTPPathPattern("/api/v1/kb/{kb_id}/documents/{doc_id}/download-url"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_KnowledgeBaseService_GetDocumentDownloadURL_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_KnowledgeBaseService_GetDocumentDownloadURL_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
@@ -792,6 +1048,9 @@ var (
 	pattern_KnowledgeBaseService_DownloadDocumentSimple_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"api", "v1", "kb", "kb_id", "documents", "doc_id", "download"}, ""))
 	pattern_KnowledgeBaseService_ListDocuments_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "kb", "kb_id", "documents"}, ""))
 	pattern_KnowledgeBaseService_DeleteDocument_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"api", "v1", "kb", "kb_id", "documents", "doc_id", "delete"}, ""))
+	pattern_KnowledgeBaseService_PrepareDocumentUpload_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 2, 5}, []string{"api", "v1", "kb", "kb_id", "documents", "prepare-upload"}, ""))
+	pattern_KnowledgeBaseService_ConfirmDocumentUpload_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 2, 5}, []string{"api", "v1", "kb", "kb_id", "documents", "confirm-upload"}, ""))
+	pattern_KnowledgeBaseService_GetDocumentDownloadURL_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"api", "v1", "kb", "kb_id", "documents", "doc_id", "download-url"}, ""))
 )
 
 var (
@@ -804,4 +1063,7 @@ var (
 	forward_KnowledgeBaseService_DownloadDocumentSimple_0 = runtime.ForwardResponseMessage
 	forward_KnowledgeBaseService_ListDocuments_0          = runtime.ForwardResponseMessage
 	forward_KnowledgeBaseService_DeleteDocument_0         = runtime.ForwardResponseMessage
+	forward_KnowledgeBaseService_PrepareDocumentUpload_0  = runtime.ForwardResponseMessage
+	forward_KnowledgeBaseService_ConfirmDocumentUpload_0  = runtime.ForwardResponseMessage
+	forward_KnowledgeBaseService_GetDocumentDownloadURL_0 = runtime.ForwardResponseMessage
 )

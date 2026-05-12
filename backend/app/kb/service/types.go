@@ -19,4 +19,9 @@ type Service interface {
 	ListDocuments(ctx context.Context, kbID int64) ([]domain.Document, error)
 	DeleteDocument(ctx context.Context, kbID, docID int64) error
 	DownloadDocument(ctx context.Context, kbID, docID int64) (domain.Document, []byte, error)
+
+	// Presigned URL
+	PrepareDocumentUpload(ctx context.Context, kbID int64, filename, contentType string, fileSize int64) (objectKey string, uploadURL string, err error)
+	ConfirmDocumentUpload(ctx context.Context, kbID int64, objectKey, filename, contentType string, fileSize int64) (domain.Document, error)
+	GetDocumentDownloadURL(ctx context.Context, kbID, docID int64) (string, domain.Document, error)
 }

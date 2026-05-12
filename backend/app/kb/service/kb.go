@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -17,7 +18,12 @@ import (
 	"github.com/mymikasa/pivot/pkg/storage"
 )
 
-const maxFileSize = 10 * 1024 * 1024 // 10MB
+const maxFileSize = 100 * 1024 * 1024 // 100MB
+
+const (
+	presignedPutTTL = 15 * time.Minute
+	presignedGetTTL = 1 * time.Hour
+)
 
 var allowedExtensions = map[string]struct{}{
 	".pdf": {}, ".doc": {}, ".docx": {}, ".xls": {}, ".xlsx": {}, ".ppt": {}, ".pptx": {},
@@ -229,4 +235,75 @@ func validateFile(filename string, size int) error {
 		return domain.ErrInvalidFileType
 	}
 	return nil
+}
+
+// --- Presigned URL ---
+
+func (s *KbService) PrepareDocumentUpload(ctx context.Context, kbID int64, filename, contentType string, fileSize int64) (string, string, error) {
+	if _, err := s.repo.FindKBByID(ctx, kbID); err != nil {
+		return "", "", err
+	}
+
+	if err := validateFile(filename, int(fileSize)); err != nil {
+		return "", "", err
+	}
+
+	ext := filepath.Ext(filename)
+	objectKey := fmt.Sprintf("%d/%s%s", kbID, uuid.New().String(), ext)
+
+	uploadURL, err := s.storage.PresignedPutObject(ctx, objectKey, presignedPutTTL)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "presigned put url", slog.Any("err", err))
+		return "", "", err
+	}
+
+	return objectKey, uploadURL, nil
+}
+
+func (s *KbService) ConfirmDocumentUpload(ctx context.Context, kbID int64, objectKey, filename, contentType string, fileSize int64) (domain.Document, error) {
+	exists, err := s.storage.ObjectExists(ctx, objectKey)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "check object exists", slog.Any("err", err))
+		return domain.Document{}, err
+	}
+	if !exists {
+		return domain.Document{}, domain.ErrUploadNotConfirmed
+	}
+
+	docID, err := s.repo.CreateDocument(ctx, domain.NewDocumentInput{
+		KBID:        kbID,
+		Filename:    filename,
+		ObjectKey:   objectKey,
+		ContentType: contentType,
+		FileSize:    int32(fileSize),
+	})
+	if err != nil {
+		s.logger.ErrorContext(ctx, "create document record", slog.Any("err", err))
+		return domain.Document{}, err
+	}
+
+	if err := s.repo.UpdateDocumentStatus(ctx, docID, "ready"); err != nil {
+		s.logger.ErrorContext(ctx, "update document status", slog.Any("err", err))
+		return domain.Document{}, err
+	}
+
+	return s.repo.FindDocumentByID(ctx, kbID, docID)
+}
+func (s *KbService) GetDocumentDownloadURL(ctx context.Context, kbID, docID int64) (string, domain.Document, error) {
+	doc, err := s.repo.FindDocumentByID(ctx, kbID, docID)
+	if err != nil {
+		return "", domain.Document{}, err
+	}
+
+	if doc.Status != "ready" {
+		return "", domain.Document{}, domain.ErrUploadNotConfirmed
+	}
+
+	url, err := s.storage.PresignedGetObject(ctx, doc.ObjectKey, presignedGetTTL)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "presigned get url", slog.Any("err", err))
+		return "", domain.Document{}, err
+	}
+
+	return url, doc, nil
 }

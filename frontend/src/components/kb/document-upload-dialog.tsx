@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 
 import { useUploadDocumentMutation } from "@/data/kb"
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
 
 const ALLOWED_TYPES = [
   "application/pdf",
@@ -127,7 +127,7 @@ export function DocumentUploadDialog({
             上传文档
           </h2>
           <p className="mt-1 text-sm text-text-muted">
-            支持 PDF、Office、TXT、MD、CSV、JSON，单文件最大 10MB
+            支持 PDF、Office、TXT、MD、CSV、JSON，单文件最大 100MB
           </p>
         </div>
 

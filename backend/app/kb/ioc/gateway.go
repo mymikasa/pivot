@@ -24,7 +24,13 @@ func InitHTTPGateway(c *Config) (*http.Server, error) {
 			},
 		}),
 	)
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(maxMsgSize),
+			grpc.MaxCallSendMsgSize(maxMsgSize),
+		),
+	}
 
 	if err := kbv1.RegisterKnowledgeBaseServiceHandlerFromEndpoint(
 		context.Background(), mux, c.GRPC.Addr, opts,

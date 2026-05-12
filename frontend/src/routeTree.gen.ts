@@ -15,7 +15,9 @@ import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthenticatedKbIndexRouteImport } from './routes/_authenticated/kb/index'
 import { Route as AuthenticatedManageUsersRouteImport } from './routes/_authenticated/manage/users'
-import { Route as AuthenticatedKbKbIdRouteImport } from './routes/_authenticated/kb/$kbId'
+import { Route as AuthenticatedKbKbIdRouteRouteImport } from './routes/_authenticated/kb/$kbId/route'
+import { Route as AuthenticatedKbKbIdIndexRouteImport } from './routes/_authenticated/kb/$kbId/index'
+import { Route as AuthenticatedKbKbIdDocIdRouteImport } from './routes/_authenticated/kb/$kbId/$docId'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -47,27 +49,43 @@ const AuthenticatedManageUsersRoute =
     path: '/manage/users',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedKbKbIdRoute = AuthenticatedKbKbIdRouteImport.update({
-  id: '/kb/$kbId',
-  path: '/kb/$kbId',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
+const AuthenticatedKbKbIdRouteRoute =
+  AuthenticatedKbKbIdRouteRouteImport.update({
+    id: '/kb/$kbId',
+    path: '/kb/$kbId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedKbKbIdIndexRoute =
+  AuthenticatedKbKbIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedKbKbIdRouteRoute,
+  } as any)
+const AuthenticatedKbKbIdDocIdRoute =
+  AuthenticatedKbKbIdDocIdRouteImport.update({
+    id: '/$docId',
+    path: '/$docId',
+    getParentRoute: () => AuthenticatedKbKbIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/kb/$kbId': typeof AuthenticatedKbKbIdRoute
+  '/kb/$kbId': typeof AuthenticatedKbKbIdRouteRouteWithChildren
   '/manage/users': typeof AuthenticatedManageUsersRoute
   '/kb/': typeof AuthenticatedKbIndexRoute
+  '/kb/$kbId/$docId': typeof AuthenticatedKbKbIdDocIdRoute
+  '/kb/$kbId/': typeof AuthenticatedKbKbIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof AuthenticatedIndexRoute
-  '/kb/$kbId': typeof AuthenticatedKbKbIdRoute
   '/manage/users': typeof AuthenticatedManageUsersRoute
   '/kb': typeof AuthenticatedKbIndexRoute
+  '/kb/$kbId/$docId': typeof AuthenticatedKbKbIdDocIdRoute
+  '/kb/$kbId': typeof AuthenticatedKbKbIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -75,9 +93,11 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/kb/$kbId': typeof AuthenticatedKbKbIdRoute
+  '/_authenticated/kb/$kbId': typeof AuthenticatedKbKbIdRouteRouteWithChildren
   '/_authenticated/manage/users': typeof AuthenticatedManageUsersRoute
   '/_authenticated/kb/': typeof AuthenticatedKbIndexRoute
+  '/_authenticated/kb/$kbId/$docId': typeof AuthenticatedKbKbIdDocIdRoute
+  '/_authenticated/kb/$kbId/': typeof AuthenticatedKbKbIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,14 +108,17 @@ export interface FileRouteTypes {
     | '/kb/$kbId'
     | '/manage/users'
     | '/kb/'
+    | '/kb/$kbId/$docId'
+    | '/kb/$kbId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth/login'
     | '/auth/register'
     | '/'
-    | '/kb/$kbId'
     | '/manage/users'
     | '/kb'
+    | '/kb/$kbId/$docId'
+    | '/kb/$kbId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -105,6 +128,8 @@ export interface FileRouteTypes {
     | '/_authenticated/kb/$kbId'
     | '/_authenticated/manage/users'
     | '/_authenticated/kb/'
+    | '/_authenticated/kb/$kbId/$docId'
+    | '/_authenticated/kb/$kbId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -161,22 +186,52 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated/kb/$kbId'
       path: '/kb/$kbId'
       fullPath: '/kb/$kbId'
-      preLoaderRoute: typeof AuthenticatedKbKbIdRouteImport
+      preLoaderRoute: typeof AuthenticatedKbKbIdRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kb/$kbId/': {
+      id: '/_authenticated/kb/$kbId/'
+      path: '/'
+      fullPath: '/kb/$kbId/'
+      preLoaderRoute: typeof AuthenticatedKbKbIdIndexRouteImport
+      parentRoute: typeof AuthenticatedKbKbIdRouteRoute
+    }
+    '/_authenticated/kb/$kbId/$docId': {
+      id: '/_authenticated/kb/$kbId/$docId'
+      path: '/$docId'
+      fullPath: '/kb/$kbId/$docId'
+      preLoaderRoute: typeof AuthenticatedKbKbIdDocIdRouteImport
+      parentRoute: typeof AuthenticatedKbKbIdRouteRoute
     }
   }
 }
 
+interface AuthenticatedKbKbIdRouteRouteChildren {
+  AuthenticatedKbKbIdDocIdRoute: typeof AuthenticatedKbKbIdDocIdRoute
+  AuthenticatedKbKbIdIndexRoute: typeof AuthenticatedKbKbIdIndexRoute
+}
+
+const AuthenticatedKbKbIdRouteRouteChildren: AuthenticatedKbKbIdRouteRouteChildren =
+  {
+    AuthenticatedKbKbIdDocIdRoute: AuthenticatedKbKbIdDocIdRoute,
+    AuthenticatedKbKbIdIndexRoute: AuthenticatedKbKbIdIndexRoute,
+  }
+
+const AuthenticatedKbKbIdRouteRouteWithChildren =
+  AuthenticatedKbKbIdRouteRoute._addFileChildren(
+    AuthenticatedKbKbIdRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedKbKbIdRoute: typeof AuthenticatedKbKbIdRoute
+  AuthenticatedKbKbIdRouteRoute: typeof AuthenticatedKbKbIdRouteRouteWithChildren
   AuthenticatedManageUsersRoute: typeof AuthenticatedManageUsersRoute
   AuthenticatedKbIndexRoute: typeof AuthenticatedKbIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedKbKbIdRoute: AuthenticatedKbKbIdRoute,
+  AuthenticatedKbKbIdRouteRoute: AuthenticatedKbKbIdRouteRouteWithChildren,
   AuthenticatedManageUsersRoute: AuthenticatedManageUsersRoute,
   AuthenticatedKbIndexRoute: AuthenticatedKbIndexRoute,
 }

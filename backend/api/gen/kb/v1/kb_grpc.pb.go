@@ -30,6 +30,9 @@ const (
 	KnowledgeBaseService_DownloadDocumentSimple_FullMethodName = "/pivot.kb.v1.KnowledgeBaseService/DownloadDocumentSimple"
 	KnowledgeBaseService_ListDocuments_FullMethodName          = "/pivot.kb.v1.KnowledgeBaseService/ListDocuments"
 	KnowledgeBaseService_DeleteDocument_FullMethodName         = "/pivot.kb.v1.KnowledgeBaseService/DeleteDocument"
+	KnowledgeBaseService_PrepareDocumentUpload_FullMethodName  = "/pivot.kb.v1.KnowledgeBaseService/PrepareDocumentUpload"
+	KnowledgeBaseService_ConfirmDocumentUpload_FullMethodName  = "/pivot.kb.v1.KnowledgeBaseService/ConfirmDocumentUpload"
+	KnowledgeBaseService_GetDocumentDownloadURL_FullMethodName = "/pivot.kb.v1.KnowledgeBaseService/GetDocumentDownloadURL"
 )
 
 // KnowledgeBaseServiceClient is the client API for KnowledgeBaseService service.
@@ -52,6 +55,10 @@ type KnowledgeBaseServiceClient interface {
 	DownloadDocumentSimple(ctx context.Context, in *DownloadDocumentRequest, opts ...grpc.CallOption) (*DownloadDocumentSimpleResponse, error)
 	ListDocuments(ctx context.Context, in *ListDocumentsRequest, opts ...grpc.CallOption) (*ListDocumentsResponse, error)
 	DeleteDocument(ctx context.Context, in *DeleteDocumentRequest, opts ...grpc.CallOption) (*DeleteDocumentResponse, error)
+	// Presigned URL upload/download
+	PrepareDocumentUpload(ctx context.Context, in *PrepareDocumentUploadRequest, opts ...grpc.CallOption) (*PrepareDocumentUploadResponse, error)
+	ConfirmDocumentUpload(ctx context.Context, in *ConfirmDocumentUploadRequest, opts ...grpc.CallOption) (*ConfirmDocumentUploadResponse, error)
+	GetDocumentDownloadURL(ctx context.Context, in *GetDocumentDownloadURLRequest, opts ...grpc.CallOption) (*GetDocumentDownloadURLResponse, error)
 }
 
 type knowledgeBaseServiceClient struct {
@@ -184,6 +191,36 @@ func (c *knowledgeBaseServiceClient) DeleteDocument(ctx context.Context, in *Del
 	return out, nil
 }
 
+func (c *knowledgeBaseServiceClient) PrepareDocumentUpload(ctx context.Context, in *PrepareDocumentUploadRequest, opts ...grpc.CallOption) (*PrepareDocumentUploadResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PrepareDocumentUploadResponse)
+	err := c.cc.Invoke(ctx, KnowledgeBaseService_PrepareDocumentUpload_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *knowledgeBaseServiceClient) ConfirmDocumentUpload(ctx context.Context, in *ConfirmDocumentUploadRequest, opts ...grpc.CallOption) (*ConfirmDocumentUploadResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ConfirmDocumentUploadResponse)
+	err := c.cc.Invoke(ctx, KnowledgeBaseService_ConfirmDocumentUpload_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *knowledgeBaseServiceClient) GetDocumentDownloadURL(ctx context.Context, in *GetDocumentDownloadURLRequest, opts ...grpc.CallOption) (*GetDocumentDownloadURLResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDocumentDownloadURLResponse)
+	err := c.cc.Invoke(ctx, KnowledgeBaseService_GetDocumentDownloadURL_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // KnowledgeBaseServiceServer is the server API for KnowledgeBaseService service.
 // All implementations must embed UnimplementedKnowledgeBaseServiceServer
 // for forward compatibility.
@@ -204,6 +241,10 @@ type KnowledgeBaseServiceServer interface {
 	DownloadDocumentSimple(context.Context, *DownloadDocumentRequest) (*DownloadDocumentSimpleResponse, error)
 	ListDocuments(context.Context, *ListDocumentsRequest) (*ListDocumentsResponse, error)
 	DeleteDocument(context.Context, *DeleteDocumentRequest) (*DeleteDocumentResponse, error)
+	// Presigned URL upload/download
+	PrepareDocumentUpload(context.Context, *PrepareDocumentUploadRequest) (*PrepareDocumentUploadResponse, error)
+	ConfirmDocumentUpload(context.Context, *ConfirmDocumentUploadRequest) (*ConfirmDocumentUploadResponse, error)
+	GetDocumentDownloadURL(context.Context, *GetDocumentDownloadURLRequest) (*GetDocumentDownloadURLResponse, error)
 	mustEmbedUnimplementedKnowledgeBaseServiceServer()
 }
 
@@ -246,6 +287,15 @@ func (UnimplementedKnowledgeBaseServiceServer) ListDocuments(context.Context, *L
 }
 func (UnimplementedKnowledgeBaseServiceServer) DeleteDocument(context.Context, *DeleteDocumentRequest) (*DeleteDocumentResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteDocument not implemented")
+}
+func (UnimplementedKnowledgeBaseServiceServer) PrepareDocumentUpload(context.Context, *PrepareDocumentUploadRequest) (*PrepareDocumentUploadResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method PrepareDocumentUpload not implemented")
+}
+func (UnimplementedKnowledgeBaseServiceServer) ConfirmDocumentUpload(context.Context, *ConfirmDocumentUploadRequest) (*ConfirmDocumentUploadResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ConfirmDocumentUpload not implemented")
+}
+func (UnimplementedKnowledgeBaseServiceServer) GetDocumentDownloadURL(context.Context, *GetDocumentDownloadURLRequest) (*GetDocumentDownloadURLResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetDocumentDownloadURL not implemented")
 }
 func (UnimplementedKnowledgeBaseServiceServer) mustEmbedUnimplementedKnowledgeBaseServiceServer() {}
 func (UnimplementedKnowledgeBaseServiceServer) testEmbeddedByValue()                              {}
@@ -448,6 +498,60 @@ func _KnowledgeBaseService_DeleteDocument_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _KnowledgeBaseService_PrepareDocumentUpload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PrepareDocumentUploadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KnowledgeBaseServiceServer).PrepareDocumentUpload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KnowledgeBaseService_PrepareDocumentUpload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KnowledgeBaseServiceServer).PrepareDocumentUpload(ctx, req.(*PrepareDocumentUploadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KnowledgeBaseService_ConfirmDocumentUpload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmDocumentUploadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KnowledgeBaseServiceServer).ConfirmDocumentUpload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KnowledgeBaseService_ConfirmDocumentUpload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KnowledgeBaseServiceServer).ConfirmDocumentUpload(ctx, req.(*ConfirmDocumentUploadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KnowledgeBaseService_GetDocumentDownloadURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDocumentDownloadURLRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KnowledgeBaseServiceServer).GetDocumentDownloadURL(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KnowledgeBaseService_GetDocumentDownloadURL_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KnowledgeBaseServiceServer).GetDocumentDownloadURL(ctx, req.(*GetDocumentDownloadURLRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // KnowledgeBaseService_ServiceDesc is the grpc.ServiceDesc for KnowledgeBaseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -490,6 +594,18 @@ var KnowledgeBaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteDocument",
 			Handler:    _KnowledgeBaseService_DeleteDocument_Handler,
+		},
+		{
+			MethodName: "PrepareDocumentUpload",
+			Handler:    _KnowledgeBaseService_PrepareDocumentUpload_Handler,
+		},
+		{
+			MethodName: "ConfirmDocumentUpload",
+			Handler:    _KnowledgeBaseService_ConfirmDocumentUpload_Handler,
+		},
+		{
+			MethodName: "GetDocumentDownloadURL",
+			Handler:    _KnowledgeBaseService_GetDocumentDownloadURL_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
