@@ -194,8 +194,9 @@ Response: { "message": "task cancelled" }
 ```
 src/
 ├── main.py                          # FastAPI 入口（已有，扩展）
+├── config.yaml                      # 配置文件（新增）
 ├── core/
-│   ├── config.py                    # 配置（已有，新增 minio/milvus/jwt/embedding 配置）
+│   ├── config.py                    # 配置加载（重写：yaml + env 覆盖）
 │   ├── security.py                  # JWT 校验（新增）
 │   └── database.py                  # SQLAlchemy 配置（已有）
 ├── pipeline/
@@ -232,20 +233,84 @@ src/
         └── 001_create_parse_tables.py
 ```
 
-## 配置项
+## 配置
 
-| 环境变量 | 说明 | 默认值 |
+与 Go 后端保持一致：`config.yaml` 配置文件 + `PIVOT_PARSE_` 前缀环境变量覆盖。优先级：环境变量 > 配置文件 > 默认值。
+
+### config.yaml
+
+```yaml
+server:
+  host: "0.0.0.0"
+  port: 8000
+
+db:
+  url: "mysql+pymysql://pivot:pivot_pass_2026@localhost:3306/pivot"
+
+log:
+  level: "INFO"
+
+jwt:
+  secret: "pivot-dev-jwt-secret-2026-change-in-prod"
+
+minio:
+  endpoint: "localhost:9000"
+  bucket: "pivot"
+  access_key: "minioadmin"
+  secret_key: "minioadmin"
+
+milvus:
+  uri: "./milvus.db"
+
+embedding:
+  model: "text-embedding-3-small"
+  api_key: ""
+  api_base: "https://api.openai.com/v1"
+  dim: 1536
+```
+
+### 环境变量覆盖
+
+配置文件路径通过 `PIVOT_PARSE_CONFIG` 环境变量指定，默认 `./config.yaml`。
+
+| 环境变量 | 对应配置项 | 说明 |
 |---|---|---|
-| PIVOT_JWT_SECRET | JWT 密钥（与 Go 服务共享） | - |
-| PIVOT_MINIO_ENDPOINT | MinIO 地址 | localhost:9000 |
-| PIVOT_MINIO_ACCESS_KEY | MinIO Access Key | - |
-| PIVOT_MINIO_SECRET_KEY | MinIO Secret Key | - |
-| PIVOT_MINIO_BUCKET | MinIO Bucket | pivot |
-| PIVOT_MILVUS_URI | Milvus Lite URI | ./milvus.db |
-| PIVOT_EMBEDDING_MODEL | Embedding 模型名 | text-embedding-3-small |
-| PIVOT_EMBEDDING_API_KEY | Embedding API Key | - |
-| PIVOT_EMBEDDING_API_BASE | Embedding API Base URL | https://api.openai.com/v1 |
-| PIVOT_EMBEDDING_DIM | Embedding 维度 | 1536 |
+| PIVOT_PARSE_CONFIG | - | 配置文件路径 |
+| PIVOT_PARSE_SERVER_HOST | server.host | 服务地址 |
+| PIVOT_PARSE_SERVER_PORT | server.port | 服务端口 |
+| PIVOT_PARSE_DB_URL | db.url | 数据库连接串 |
+| PIVOT_PARSE_JWT_SECRET | jwt.secret | JWT 密钥（与 Go 服务共享） |
+| PIVOT_PARSE_MINIO_ENDPOINT | minio.endpoint | MinIO 地址 |
+| PIVOT_PARSE_MINIO_ACCESS_KEY | minio.access_key | MinIO Access Key |
+| PIVOT_PARSE_MINIO_SECRET_KEY | minio.secret_key | MinIO Secret Key |
+| PIVOT_PARSE_MINIO_BUCKET | minio.bucket | MinIO Bucket |
+| PIVOT_PARSE_MILVUS_URI | milvus.uri | Milvus Lite URI |
+| PIVOT_PARSE_EMBEDDING_MODEL | embedding.model | Embedding 模型名 |
+| PIVOT_PARSE_EMBEDDING_API_KEY | embedding.api_key | Embedding API Key |
+| PIVOT_PARSE_EMBEDDING_API_BASE | embedding.api_base | Embedding API Base URL |
+| PIVOT_PARSE_EMBEDDING_DIM | embedding.dim | Embedding 维度 |
+
+### 实现方式
+
+使用 `pydantic-settings` 的 YAML 支持加载 `config.yaml`，同时保留环境变量覆盖能力：
+
+```python
+class Settings(BaseSettings):
+    server: ServerConfig
+    db: DBConfig
+    jwt: JWTConfig
+    minio: MinIOConfig
+    milvus: MilvusConfig
+    embedding: EmbeddingConfig
+
+    model_config = SettingsConfigDict(
+        yaml_file=os.getenv("PIVOT_PARSE_CONFIG", "config.yaml"),
+        env_prefix="PIVOT_PARSE_",
+        env_nested_delimiter="__",
+    )
+```
+
+敏感配置（jwt.secret、minio.access_key、minio.secret_key、embedding.api_key）优先从环境变量读取，配置文件中可留空。
 
 ## 实现阶段
 
