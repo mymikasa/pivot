@@ -288,7 +288,7 @@ function DashboardPage() {
         </h2>
         <div className="rounded-xl border border-border-dim bg-white p-6">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {gettingStarted.map((item, i) => (
+            {gettingStarted.map((item) => (
               <div key={item.step} className="flex items-start gap-4">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
                   {item.step}
