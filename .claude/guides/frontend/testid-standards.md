@@ -1,7 +1,7 @@
 # data-testid 编写规范（Agent 主规范）
 
 **定位**：本文件是前端 `data-testid` 的唯一主规范。  
-**适用对象**：frontend-dev、demo-dev、前端研发人员。
+**适用对象**：f-dev、demo-dev、前端研发人员。
 
 ## 核心原则
 
