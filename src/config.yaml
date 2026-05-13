@@ -1,21 +1,32 @@
 server:
   host: "0.0.0.0"
   port: 8000
+  debug: true
+cors:
+  origins: ["http://localhost:5173", "http://localhost:5174"]
 db:
-  url: "mysql+pymysql://pivot:pivot_pass_2026@localhost:3306/pivot"
+  url: "mysql+pymysql://pivot:pivot_pass_2026@localhost:13306/pivot"
 log:
   level: "INFO"
 jwt:
   secret: "pivot-dev-jwt-secret-2026-change-in-prod"
+  algorithm: "HS256"
+  issuer: "pivot"
+  audience: "user"
 minio:
-  endpoint: "localhost:9000"
+  endpoint: "localhost:19000"
   bucket: "pivot"
   access_key: "minioadmin"
   secret_key: "minioadmin"
+  secure: false
 milvus:
   uri: "./milvus.db"
 embedding:
-  model: "text-embedding-3-small"
+  provider: "huggingface"
+  model: "BAAI/bge-small-zh-v1.5"
   api_key: ""
   api_base: "https://api.openai.com/v1"
-  dim: 1536
+  dim: 512
+worker:
+  poll_interval_seconds: 2.0
+  enabled: false

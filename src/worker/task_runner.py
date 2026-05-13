@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import threading
 import time
@@ -7,21 +6,17 @@ from collections.abc import Callable
 from sqlalchemy.orm import Session, sessionmaker
 
 from src.core.config import settings
-from src.pipeline.context import PipelineContext
-from src.pipeline.default_pipeline import build_default_pipeline
+from src.core.minio import MinIOClient
+from src.pipeline.ingest import ingest_bytes
 from src.worker.task_manager import TaskManager
 
 logger = logging.getLogger(__name__)
 
 
-def default_download_file(object_key: str) -> bytes:
-    raise RuntimeError(f"尚未配置 MinIO 下载客户端，无法下载 {object_key}")
-
-
 def run_one_task(
     db: Session,
     *,
-    download_file: Callable[[str], bytes] = default_download_file,
+    download_file: Callable[[str], bytes],
 ) -> bool:
     manager = TaskManager(db)
     task = manager.claim_next_pending_task()
@@ -29,23 +24,20 @@ def run_one_task(
         return False
 
     try:
+        manager.update_progress(task.id, 10)
         raw_binary = download_file(task.object_key)
-        ctx = PipelineContext(
+
+        manager.update_progress(task.id, 30)
+        node_count = ingest_bytes(
+            raw_binary,
+            content_type=task.content_type,
             kb_id=task.kb_id,
             document_id=task.document_id,
             object_key=task.object_key,
-            content_type=task.content_type,
-            raw_binary=raw_binary,
         )
-        pipeline = build_default_pipeline(db)
-        asyncio.run(
-            pipeline.execute(
-                ctx,
-                on_progress=lambda progress: manager.update_progress(
-                    task.id, progress
-                ),
-            )
-        )
+        logger.info("任务 %s 完成，写入 %d 个节点", task.id, node_count)
+
+        manager.update_progress(task.id, 100)
         manager.complete_task(task.id)
         return True
     except Exception as exc:
@@ -59,9 +51,11 @@ class ParseTaskWorker:
         self,
         session_factory: sessionmaker[Session],
         *,
+        minio_client: MinIOClient,
         poll_interval_seconds: float = settings.worker_poll_interval_seconds,
     ) -> None:
         self.session_factory = session_factory
+        self.minio_client = minio_client
         self.poll_interval_seconds = poll_interval_seconds
         self._stop_event = threading.Event()
         self._thread: threading.Thread | None = None
@@ -80,6 +74,9 @@ class ParseTaskWorker:
     def _run_loop(self) -> None:
         while not self._stop_event.is_set():
             with self.session_factory() as db:
-                did_work = run_one_task(db)
+                did_work = run_one_task(
+                    db,
+                    download_file=self.minio_client.download,
+                )
             if not did_work:
                 time.sleep(self.poll_interval_seconds)

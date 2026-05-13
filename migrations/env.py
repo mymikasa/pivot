@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 
 from src.core.database import Base
-from src.models.user import RefreshToken, Role, User
+from src.models import ParseTask, DocumentChunk  # noqa: F401 — register with Base.metadata
 
 config = context.config
 

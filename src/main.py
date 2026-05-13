@@ -7,12 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.api.router import api_router
 from src.core.config import settings
 from src.core.database import SessionLocal
-from src.routers import auth, users
+from src.core.minio import create_minio_client
 from src.worker.task_runner import ParseTaskWorker
 
 logging.basicConfig(level=settings.log_level)
 
-worker = ParseTaskWorker(SessionLocal)
+minio = create_minio_client()
+worker = ParseTaskWorker(SessionLocal, minio_client=minio)
 
 
 @asynccontextmanager
@@ -38,6 +39,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)
-app.include_router(users.router)
 app.include_router(api_router)

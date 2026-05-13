@@ -1,0 +1,19 @@
+Pivot 数据解析服务
+本服务用于将各类文档解析为结构化的文本块，支持 JSON、HTML 和纯文本格式。
+
+核心流程
+第一步：ParserStep - 从原始二进制数据中提取文本内容，按行拆分为 Section。
+第二步：CleanStep - 去除空白段落、合并多余空格、去除重复内容。
+第三步：ChunkStep - 使用滑动窗口将文本切分为固定 token 数的块，支持重叠。
+第四步：EmbedStep - 为每个文本块生成向量嵌入，用于后续语义检索。
+
+配置参数
+chunk_token_num: 512 - 每个文本块的最大 token 数
+overlap: 50 - 相邻块之间的重叠 token 数
+embedding_dim: 1536 - 向量维度
+poll_interval: 2.0s - Worker 轮询间隔
+
+支持的文件类型
+application/json - JSON 格式化输出
+text/html - HTML 标签剥离，纯文本提取
+text/plain - 纯文本直接处理
