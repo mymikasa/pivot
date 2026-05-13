@@ -9,7 +9,8 @@
     "type-check": "tsc --noEmit",
     "generate-api": "openapi-ts",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-parse-api": "openapi-ts -f openapi-ts.parse.config.ts"
   },
   "dependencies": {
     "@radix-ui/themes": "^3.3.0",

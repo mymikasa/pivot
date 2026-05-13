@@ -1,54 +1,23 @@
-import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query"
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { isAxiosError } from "axios"
 
-import { request } from "@/lib/request"
+import {
+  createParseTaskApiV1ParseTasksPost,
+  getParseTaskApiV1ParseTasksTaskIdGet,
+  listParseTasksApiV1ParseTasksGet,
+} from "@/lib/parse-api-generated/sdk.gen"
 
-interface CreateParseTaskInput {
-  kbId: string
-  documentId: string
-  objectKey: string
-  contentType: string
+import type {
+  CreateParseTaskResponse,
+  ParseTaskResponse,
+} from "@/lib/parse-api-generated/types.gen"
+
+function unwrap<T>(response: unknown): T {
+  if (isAxiosError(response)) throw response
+  return (response as { data: T }).data
 }
 
-interface RawCreateParseTaskResponse {
-  task_id: number
-  status: string
-}
-
-interface RawParseTaskResponse {
-  task_id: number
-  kb_id: number
-  document_id: number
-  status: string
-  progress: number
-  error_message: string | null
-  created_at: string
-  updated_at: string
-}
-
-export interface ParseTask {
-  taskId: number
-  kbId: number
-  documentId: number
-  status: string
-  progress: number
-  errorMessage: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-function mapParseTask(raw: RawParseTaskResponse): ParseTask {
-  return {
-    taskId: raw.task_id,
-    kbId: raw.kb_id,
-    documentId: raw.document_id,
-    status: raw.status,
-    progress: raw.progress,
-    errorMessage: raw.error_message,
-    createdAt: raw.created_at,
-    updatedAt: raw.updated_at,
-  }
-}
+export type { ParseTaskResponse as ParseTask }
 
 export function getParseApiErrorMessage(error: unknown): string {
   if (isAxiosError<{ detail?: string; message?: string }>(error)) {
@@ -61,28 +30,6 @@ export function getParseApiErrorMessage(error: unknown): string {
   return "解析任务操作失败"
 }
 
-export async function createParseTask(
-  input: CreateParseTaskInput,
-): Promise<{ taskId: number; status: string }> {
-  const { data } = await request.post<RawCreateParseTaskResponse>(
-    "/v1/parse/tasks",
-    {
-      kb_id: Number(input.kbId),
-      document_id: Number(input.documentId),
-      object_key: input.objectKey,
-      content_type: input.contentType,
-    },
-  )
-  return { taskId: data.task_id, status: data.status }
-}
-
-export async function getParseTask(taskId: number): Promise<ParseTask> {
-  const { data } = await request.get<RawParseTaskResponse>(
-    `/v1/parse/tasks/${taskId}`,
-  )
-  return mapParseTask(data)
-}
-
 export function parseTaskOptions(taskId: number | null) {
   return queryOptions({
     queryKey: ["parse", "tasks", taskId],
@@ -93,7 +40,28 @@ export function parseTaskOptions(taskId: number | null) {
     },
     queryFn: async () => {
       if (taskId === null) throw new Error("缺少解析任务 ID")
-      return getParseTask(taskId)
+      return unwrap<ParseTaskResponse>(
+        await getParseTaskApiV1ParseTasksTaskIdGet({
+          path: { task_id: taskId },
+        }),
+      )
+    },
+  })
+}
+
+export function useParseTask(taskId: number | null) {
+  return useQuery(parseTaskOptions(taskId))
+}
+
+export function parseTaskListOptions(kbId?: number, documentId?: number) {
+  return queryOptions({
+    queryKey: ["parse", "tasks", { kbId, documentId }],
+    queryFn: async () => {
+      return unwrap<{ tasks: ParseTaskResponse[] }>(
+        await listParseTasksApiV1ParseTasksGet({
+          query: { kb_id: kbId, document_id: documentId },
+        }),
+      )
     },
   })
 }
@@ -101,7 +69,22 @@ export function parseTaskOptions(taskId: number | null) {
 export function useCreateParseTaskMutation(kbId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: createParseTask,
+    mutationFn: async (input: {
+      documentId: string
+      objectKey: string
+      contentType: string
+    }) => {
+      return unwrap<CreateParseTaskResponse>(
+        await createParseTaskApiV1ParseTasksPost({
+          body: {
+            kb_id: Number(kbId),
+            document_id: Number(input.documentId),
+            object_key: input.objectKey,
+            content_type: input.contentType,
+          },
+        }),
+      )
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ["kb", kbId, "documents"],

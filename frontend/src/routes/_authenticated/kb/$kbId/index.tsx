@@ -311,21 +311,24 @@ function DocumentRow({
   const parseTask = parseTaskQuery.data
   const parseStatus = parseTask?.status ?? getParseStatus(doc)
   const parseProgress = parseTask?.progress ?? getParseProgress(doc)
-  const parseError = parseTask?.errorMessage ?? getParseError(doc)
+  const parseError = parseTask?.error_message ?? getParseError(doc)
   const objectKey = getObjectKey(doc)
+  const contentType = getContentType(doc)
+  const fileSize = getFileSize(doc)
+  const createdAt = getCreatedAt(doc)
+  const status = getDocumentStatus(doc)
   const isParsing = parseStatus === "pending" || parseStatus === "running"
-  const canParse = doc.status === "ready" && objectKey && !isParsing
+  const canParse = status === "ready" && objectKey.length > 0 && !isParsing
 
   function handleParse() {
     createParseTaskMutation.mutate(
       {
-        kbId,
         documentId: doc.id,
         objectKey,
-        contentType: doc.content_type,
+        contentType,
       },
       {
-        onSuccess: (task) => setLocalTaskId(task.taskId),
+        onSuccess: (task) => setLocalTaskId(task.task_id),
       },
     )
   }
@@ -334,7 +337,7 @@ function DocumentRow({
     <tr className="transition-colors hover:bg-surface-1">
       <td className="px-4 py-3">
         <div className="flex items-center gap-2.5">
-          <FileIcon contentType={doc.content_type} />
+          <FileIcon contentType={contentType} />
           <Link
             to="/kb/$kbId/$docId"
             params={{ kbId, docId: doc.id }}
@@ -345,11 +348,11 @@ function DocumentRow({
         </div>
       </td>
       <td className="px-4 py-3 text-sm text-text-secondary">
-        {formatFileSize(doc.file_size)}
+        {formatFileSize(fileSize)}
       </td>
       <td className="px-4 py-3">
         <div className="flex flex-col gap-1">
-          <StatusBadge status={doc.status} />
+          <StatusBadge status={status} />
           <ParseStatusBadge status={parseStatus} />
           {isParsing && (
             <div className="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2">
@@ -367,7 +370,7 @@ function DocumentRow({
         </div>
       </td>
       <td className="px-4 py-3 text-sm text-text-secondary">
-        {formatDate(doc.created_at)}
+        {formatDate(createdAt)}
       </td>
       <td className="px-4 py-3 text-right">
         <div className="flex justify-end gap-1">
@@ -517,12 +520,30 @@ function getObjectKey(doc: KbDocument): string {
   return doc.objectKey ?? doc.object_key ?? ""
 }
 
+function getContentType(doc: KbDocument): string {
+  return doc.contentType ?? doc.content_type ?? ""
+}
+
+function getFileSize(doc: KbDocument): number {
+  return doc.fileSize ?? doc.file_size ?? 0
+}
+
+function getCreatedAt(doc: KbDocument): string {
+  return doc.createdAt ?? doc.created_at ?? ""
+}
+
+function getDocumentStatus(doc: KbDocument): string {
+  return doc.status ?? ""
+}
+
 function getParseStatus(doc: KbDocument): string {
   return doc.parseStatus ?? doc.parse_status ?? "not_parsed"
 }
 
 function getParseTaskId(doc: KbDocument): number | null {
-  return doc.parseTaskId ?? doc.parse_task_id ?? null
+  const raw = doc.parseTaskId ?? doc.parse_task_id
+  const value = typeof raw === "string" ? Number(raw) : raw
+  return value && value > 0 ? value : null
 }
 
 function getParseProgress(doc: KbDocument): number {

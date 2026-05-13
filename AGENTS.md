@@ -53,7 +53,7 @@ Pivot 是一个 monorepo，顶层目录结构如下：
 - 遵循所编辑文件中已有的惯例。新建文件时，参考相邻文件的风格。
 - 优先使用短小、职责单一的函数，而非冗长的逻辑块。
 - 避免过早抽象——当重复模式明显时再引入，而非看到两次就抽象。
-- 除非用户明确要求，否则**不要**添加注释。代码应通过清晰的命名自文档化。
+- 代码应通过清晰的命名自文档化，并且在关键位置要增加注释。
 
 ### 导入（Imports）
 
@@ -105,6 +105,42 @@ Pivot 是一个 monorepo，顶层目录结构如下：
 - 仅 mock 外部服务或 I/O；谨慎 mock 内部模块。
 
 ## 项目特定说明
+
+### 前端 API SDK 生成规范
+
+本项目有两个后端服务，各自独立生成前端 TypeScript SDK：
+
+| 后端服务 | OpenAPI 来源 | 生成配置 | 输出目录 |
+|----------|-------------|---------|---------|
+| Go gRPC（知识库/用户） | `frontend/openapi.json`（从 proto 生成） | `frontend/openapi-ts.config.ts` | `frontend/src/lib/api-generated/` |
+| Python FastAPI（数据解析） | `frontend/openapi-parse.json`（从 FastAPI 导出） | `frontend/openapi-ts.parse.config.ts` | `frontend/src/lib/parse-api-generated/` |
+
+**生成命令：**
+
+```bash
+# Go 后端 SDK（已有）
+cd frontend && npm run generate-api
+
+# Python 解析服务 SDK（新增）
+cd frontend && npm run generate-parse-api
+```
+
+**Python FastAPI OpenAPI spec 导出：**
+
+```bash
+# 后端 API 变更后，重新导出 spec
+uv run python scripts/export_openapi.py
+# 然后重新生成前端 SDK
+cd frontend && npm run generate-parse-api
+```
+
+**规范：**
+
+- 新增或修改后端 API 端点后，必须重新导出 spec 并重新生成 SDK
+- 生成代码目录已加入 eslint ignore，禁止手动修改
+- 前端数据层（`src/data/*.ts`）封装生成 SDK，提供 queryOptions 和 useMutation hooks
+- 不要在组件中直接调用生成 SDK 的原始函数，统一通过 `src/data/` 封装层
+- 两个生成 SDK 的 axios client 共享 `src/lib/openapi-runtime.ts`（JWT 鉴权拦截器）
 
 ### `pkgs/ragflow/`
 
