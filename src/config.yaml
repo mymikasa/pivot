@@ -29,4 +29,4 @@ embedding:
   dim: 512
 worker:
   poll_interval_seconds: 2.0
-  enabled: false
+  enabled: true
