@@ -1,0 +1,21 @@
+server:
+  host: "0.0.0.0"
+  port: 8000
+db:
+  url: "mysql+pymysql://pivot:pivot_pass_2026@localhost:3306/pivot"
+log:
+  level: "INFO"
+jwt:
+  secret: "pivot-dev-jwt-secret-2026-change-in-prod"
+minio:
+  endpoint: "localhost:9000"
+  bucket: "pivot"
+  access_key: "minioadmin"
+  secret_key: "minioadmin"
+milvus:
+  uri: "./milvus.db"
+embedding:
+  model: "text-embedding-3-small"
+  api_key: ""
+  api_base: "https://api.openai.com/v1"
+  dim: 1536

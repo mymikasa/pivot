@@ -20,5 +20,6 @@ type Repository interface {
 	FindDocumentByID(ctx context.Context, kbID, docID int64) (domain.Document, error)
 	CreateDocument(ctx context.Context, in domain.NewDocumentInput) (int64, error)
 	UpdateDocumentStatus(ctx context.Context, id int64, status string) error
+	UpdateDocumentParseState(ctx context.Context, docID int64, status string, taskID *int64, progress int32, parseErr string) error
 	DeleteDocument(ctx context.Context, kbID, docID int64) error
 }

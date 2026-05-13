@@ -29,7 +29,20 @@ import type {
 } from "@/lib/api-generated/types.gen"
 
 // Re-export generated types for consumers
-export type { V1KnowledgeBase as KnowledgeBase, V1Document as Document }
+export type { V1KnowledgeBase as KnowledgeBase }
+
+export interface KbDocument extends V1Document {
+  object_key?: string
+  objectKey?: string
+  parse_status?: string
+  parseStatus?: string
+  parse_task_id?: number
+  parseTaskId?: number
+  parse_progress?: number
+  parseProgress?: number
+  parse_error?: string
+  parseError?: string
+}
 
 // --- Error helpers ---
 
@@ -80,9 +93,13 @@ export function documentListOptions(kbId: string) {
   return queryOptions({
     queryKey: ["kb", kbId, "documents"],
     queryFn: async () => {
-      return unwrap<V1ListDocumentsResponse>(
+      const data = unwrap<V1ListDocumentsResponse>(
         await knowledgeBaseServiceListDocuments({ path: { kbId } }),
       )
+      return {
+        ...data,
+        items: (data.items ?? []) as KbDocument[],
+      }
     },
   })
 }

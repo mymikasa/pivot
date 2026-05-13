@@ -20,9 +20,26 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     debug: bool = False
 
+    minio_endpoint: str = "localhost:9000"
+    minio_bucket: str = "pivot"
+    minio_access_key: str = "minioadmin"
+    minio_secret_key: str = "minioadmin"
+    minio_secure: bool = False
+
+    milvus_uri: str = "./milvus.db"
+
+    embedding_model: str = "text-embedding-3-small"
+    embedding_api_key: str = ""
+    embedding_api_base: str = "https://api.openai.com/v1"
+    embedding_dim: int = 1536
+
+    worker_poll_interval_seconds: float = 2.0
+    worker_enabled: bool = False
+
     model_config = SettingsConfigDict(
         env_file=os.getenv("PIVOT_ENV_FILE", ".env.dev"),
         env_prefix="PIVOT_",
+        extra="ignore",
     )
 
     @field_validator("database_url")
@@ -49,6 +66,13 @@ class Settings(BaseSettings):
                 "log_level 必须是 DEBUG、INFO、WARNING、ERROR 或 CRITICAL"
             )
         return normalized_value
+
+    @field_validator("embedding_dim")
+    @classmethod
+    def validate_embedding_dim(cls, value: int) -> int:
+        if value <= 0:
+            raise ValueError("embedding_dim 必须大于 0")
+        return value
 
     @model_validator(mode="after")
     def validate_prod_secret_key(self) -> "Settings":

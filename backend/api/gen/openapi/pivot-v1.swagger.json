@@ -758,6 +758,27 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "parseStatus": {
+          "type": "string"
+        },
+        "parseTaskId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "parseProgress": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "parseError": {
+          "type": "string"
+        },
+        "parsedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "objectKey": {
+          "type": "string"
         }
       }
     },

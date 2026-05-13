@@ -133,6 +133,12 @@ message Document {
   int32 file_size = 5;
   string status = 6;
   google.protobuf.Timestamp created_at = 7;
+  string parse_status = 8;
+  int64 parse_task_id = 9;
+  int32 parse_progress = 10;
+  string parse_error = 11;
+  google.protobuf.Timestamp parsed_at = 12;
+  string object_key = 13;
 }
 
 message UploadDocumentRequest {

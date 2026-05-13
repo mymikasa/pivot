@@ -163,15 +163,26 @@ func toProtoKB(kb domain.KnowledgeBase) *kbv1.KnowledgeBase {
 }
 
 func toProtoDocument(doc domain.Document) *kbv1.Document {
-	return &kbv1.Document{
-		Id:          doc.ID,
-		KbId:        doc.KBID,
-		Filename:    doc.Filename,
-		ContentType: doc.ContentType,
-		FileSize:    doc.FileSize,
-		Status:      doc.Status,
-		CreatedAt:   timestamppb.New(doc.CreatedAt),
+	pb := &kbv1.Document{
+		Id:            doc.ID,
+		KbId:          doc.KBID,
+		Filename:      doc.Filename,
+		ContentType:   doc.ContentType,
+		FileSize:      doc.FileSize,
+		Status:        doc.Status,
+		CreatedAt:     timestamppb.New(doc.CreatedAt),
+		ParseStatus:   doc.ParseStatus,
+		ParseProgress: doc.ParseProgress,
+		ParseError:    doc.ParseError,
+		ObjectKey:     doc.ObjectKey,
 	}
+	if doc.ParseTaskID != nil {
+		pb.ParseTaskId = *doc.ParseTaskID
+	}
+	if doc.ParsedAt != nil {
+		pb.ParsedAt = timestamppb.New(*doc.ParsedAt)
+	}
+	return pb
 }
 
 // --- Presigned URL ---

@@ -44,19 +44,28 @@ func (r *KbRepository) UpdateDocumentStatus(ctx context.Context, id int64, statu
 	return r.dao.UpdateDocumentStatus(ctx, id, status)
 }
 
+func (r *KbRepository) UpdateDocumentParseState(ctx context.Context, docID int64, status string, taskID *int64, progress int32, parseErr string) error {
+	return r.dao.UpdateDocumentParseState(ctx, docID, status, taskID, progress, parseErr)
+}
+
 func (r *KbRepository) DeleteDocument(ctx context.Context, kbID, docID int64) error {
 	return r.dao.DeleteDocument(ctx, kbID, docID)
 }
 
 func toDomainDocument(d dao.Document) domain.Document {
 	return domain.Document{
-		ID:          d.ID,
-		KBID:        d.KBID,
-		Filename:    d.Filename,
-		ObjectKey:   d.ObjectKey,
-		ContentType: d.ContentType,
-		FileSize:    d.FileSize,
-		Status:      d.Status,
-		CreatedAt:   d.CreatedAt,
+		ID:            d.ID,
+		KBID:          d.KBID,
+		Filename:      d.Filename,
+		ObjectKey:     d.ObjectKey,
+		ContentType:   d.ContentType,
+		FileSize:      d.FileSize,
+		Status:        d.Status,
+		ParseStatus:   d.ParseStatus,
+		ParseTaskID:   d.ParseTaskID,
+		ParseProgress: d.ParseProgress,
+		ParseError:    d.ParseError,
+		ParsedAt:      d.ParsedAt,
+		CreatedAt:     d.CreatedAt,
 	}
 }

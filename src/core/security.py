@@ -1,10 +1,18 @@
 from datetime import datetime, timedelta, timezone
+from dataclasses import dataclass
 from uuid import uuid4
 
+from fastapi import HTTPException, status
 import bcrypt
 import jwt
 
 from src.core.config import settings
+
+
+@dataclass(frozen=True)
+class AuthenticatedUser:
+    user_id: int
+    role: str
 
 
 def get_password_hash(password: str) -> str:
@@ -44,3 +52,25 @@ def decode_token(token: str) -> dict | None:
         )
     except jwt.PyJWTError:
         return None
+
+
+def decode_access_token(
+    token: str,
+    *,
+    secret: str,
+    algorithm: str,
+) -> AuthenticatedUser:
+    try:
+        payload = jwt.decode(token, secret, algorithms=[algorithm])
+        subject = payload.get("sub")
+        if subject is None:
+            raise ValueError("missing sub")
+        return AuthenticatedUser(
+            user_id=int(subject),
+            role=str(payload.get("role", "user")),
+        )
+    except (jwt.PyJWTError, ValueError) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="无效或已过期的访问令牌",
+        ) from exc

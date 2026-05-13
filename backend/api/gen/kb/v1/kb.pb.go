@@ -572,6 +572,12 @@ type Document struct {
 	FileSize      int32                  `protobuf:"varint,5,opt,name=file_size,json=fileSize,proto3" json:"file_size,omitempty"`
 	Status        string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	ParseStatus   string                 `protobuf:"bytes,8,opt,name=parse_status,json=parseStatus,proto3" json:"parse_status,omitempty"`
+	ParseTaskId   int64                  `protobuf:"varint,9,opt,name=parse_task_id,json=parseTaskId,proto3" json:"parse_task_id,omitempty"`
+	ParseProgress int32                  `protobuf:"varint,10,opt,name=parse_progress,json=parseProgress,proto3" json:"parse_progress,omitempty"`
+	ParseError    string                 `protobuf:"bytes,11,opt,name=parse_error,json=parseError,proto3" json:"parse_error,omitempty"`
+	ParsedAt      *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=parsed_at,json=parsedAt,proto3" json:"parsed_at,omitempty"`
+	ObjectKey     string                 `protobuf:"bytes,13,opt,name=object_key,json=objectKey,proto3" json:"object_key,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -653,6 +659,48 @@ func (x *Document) GetCreatedAt() *timestamppb.Timestamp {
 		return x.CreatedAt
 	}
 	return nil
+}
+
+func (x *Document) GetParseStatus() string {
+	if x != nil {
+		return x.ParseStatus
+	}
+	return ""
+}
+
+func (x *Document) GetParseTaskId() int64 {
+	if x != nil {
+		return x.ParseTaskId
+	}
+	return 0
+}
+
+func (x *Document) GetParseProgress() int32 {
+	if x != nil {
+		return x.ParseProgress
+	}
+	return 0
+}
+
+func (x *Document) GetParseError() string {
+	if x != nil {
+		return x.ParseError
+	}
+	return ""
+}
+
+func (x *Document) GetParsedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ParsedAt
+	}
+	return nil
+}
+
+func (x *Document) GetObjectKey() string {
+	if x != nil {
+		return x.ObjectKey
+	}
+	return ""
 }
 
 type UploadDocumentRequest struct {
@@ -1570,7 +1618,7 @@ const file_kb_v1_kb_proto_rawDesc = "" +
 	"\x02kb\x18\x01 \x01(\v2\x1a.pivot.kb.v1.KnowledgeBaseR\x02kb\",\n" +
 	"\x1aDeleteKnowledgeBaseRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"\x1d\n" +
-	"\x1bDeleteKnowledgeBaseResponse\"\xde\x01\n" +
+	"\x1bDeleteKnowledgeBaseResponse\"\xc5\x03\n" +
 	"\bDocument\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x13\n" +
 	"\x05kb_id\x18\x02 \x01(\x03R\x04kbId\x12\x1a\n" +
@@ -1579,7 +1627,16 @@ const file_kb_v1_kb_proto_rawDesc = "" +
 	"\tfile_size\x18\x05 \x01(\x05R\bfileSize\x12\x16\n" +
 	"\x06status\x18\x06 \x01(\tR\x06status\x129\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\x7f\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12!\n" +
+	"\fparse_status\x18\b \x01(\tR\vparseStatus\x12\"\n" +
+	"\rparse_task_id\x18\t \x01(\x03R\vparseTaskId\x12%\n" +
+	"\x0eparse_progress\x18\n" +
+	" \x01(\x05R\rparseProgress\x12\x1f\n" +
+	"\vparse_error\x18\v \x01(\tR\n" +
+	"parseError\x127\n" +
+	"\tparsed_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\bparsedAt\x12\x1d\n" +
+	"\n" +
+	"object_key\x18\r \x01(\tR\tobjectKey\"\x7f\n" +
 	"\x15UploadDocumentRequest\x12\x13\n" +
 	"\x05kb_id\x18\x01 \x01(\x03R\x04kbId\x12\x1a\n" +
 	"\bfilename\x18\x02 \x01(\tR\bfilename\x12!\n" +
@@ -1707,42 +1764,43 @@ var file_kb_v1_kb_proto_depIdxs = []int32{
 	0,  // 4: pivot.kb.v1.GetKnowledgeBaseResponse.kb:type_name -> pivot.kb.v1.KnowledgeBase
 	0,  // 5: pivot.kb.v1.UpdateKnowledgeBaseResponse.kb:type_name -> pivot.kb.v1.KnowledgeBase
 	28, // 6: pivot.kb.v1.Document.created_at:type_name -> google.protobuf.Timestamp
-	11, // 7: pivot.kb.v1.UploadDocumentResponse.document:type_name -> pivot.kb.v1.Document
-	11, // 8: pivot.kb.v1.ListDocumentsResponse.items:type_name -> pivot.kb.v1.Document
-	11, // 9: pivot.kb.v1.ConfirmDocumentUploadResponse.document:type_name -> pivot.kb.v1.Document
-	1,  // 10: pivot.kb.v1.KnowledgeBaseService.CreateKnowledgeBase:input_type -> pivot.kb.v1.CreateKnowledgeBaseRequest
-	3,  // 11: pivot.kb.v1.KnowledgeBaseService.ListKnowledgeBases:input_type -> pivot.kb.v1.ListKnowledgeBasesRequest
-	5,  // 12: pivot.kb.v1.KnowledgeBaseService.GetKnowledgeBase:input_type -> pivot.kb.v1.GetKnowledgeBaseRequest
-	7,  // 13: pivot.kb.v1.KnowledgeBaseService.UpdateKnowledgeBase:input_type -> pivot.kb.v1.UpdateKnowledgeBaseRequest
-	9,  // 14: pivot.kb.v1.KnowledgeBaseService.DeleteKnowledgeBase:input_type -> pivot.kb.v1.DeleteKnowledgeBaseRequest
-	12, // 15: pivot.kb.v1.KnowledgeBaseService.UploadDocument:input_type -> pivot.kb.v1.UploadDocumentRequest
-	18, // 16: pivot.kb.v1.KnowledgeBaseService.DownloadDocument:input_type -> pivot.kb.v1.DownloadDocumentRequest
-	20, // 17: pivot.kb.v1.KnowledgeBaseService.UploadDocumentSimple:input_type -> pivot.kb.v1.UploadDocumentSimpleRequest
-	18, // 18: pivot.kb.v1.KnowledgeBaseService.DownloadDocumentSimple:input_type -> pivot.kb.v1.DownloadDocumentRequest
-	14, // 19: pivot.kb.v1.KnowledgeBaseService.ListDocuments:input_type -> pivot.kb.v1.ListDocumentsRequest
-	16, // 20: pivot.kb.v1.KnowledgeBaseService.DeleteDocument:input_type -> pivot.kb.v1.DeleteDocumentRequest
-	22, // 21: pivot.kb.v1.KnowledgeBaseService.PrepareDocumentUpload:input_type -> pivot.kb.v1.PrepareDocumentUploadRequest
-	24, // 22: pivot.kb.v1.KnowledgeBaseService.ConfirmDocumentUpload:input_type -> pivot.kb.v1.ConfirmDocumentUploadRequest
-	26, // 23: pivot.kb.v1.KnowledgeBaseService.GetDocumentDownloadURL:input_type -> pivot.kb.v1.GetDocumentDownloadURLRequest
-	2,  // 24: pivot.kb.v1.KnowledgeBaseService.CreateKnowledgeBase:output_type -> pivot.kb.v1.CreateKnowledgeBaseResponse
-	4,  // 25: pivot.kb.v1.KnowledgeBaseService.ListKnowledgeBases:output_type -> pivot.kb.v1.ListKnowledgeBasesResponse
-	6,  // 26: pivot.kb.v1.KnowledgeBaseService.GetKnowledgeBase:output_type -> pivot.kb.v1.GetKnowledgeBaseResponse
-	8,  // 27: pivot.kb.v1.KnowledgeBaseService.UpdateKnowledgeBase:output_type -> pivot.kb.v1.UpdateKnowledgeBaseResponse
-	10, // 28: pivot.kb.v1.KnowledgeBaseService.DeleteKnowledgeBase:output_type -> pivot.kb.v1.DeleteKnowledgeBaseResponse
-	13, // 29: pivot.kb.v1.KnowledgeBaseService.UploadDocument:output_type -> pivot.kb.v1.UploadDocumentResponse
-	19, // 30: pivot.kb.v1.KnowledgeBaseService.DownloadDocument:output_type -> pivot.kb.v1.DownloadDocumentResponse
-	13, // 31: pivot.kb.v1.KnowledgeBaseService.UploadDocumentSimple:output_type -> pivot.kb.v1.UploadDocumentResponse
-	21, // 32: pivot.kb.v1.KnowledgeBaseService.DownloadDocumentSimple:output_type -> pivot.kb.v1.DownloadDocumentSimpleResponse
-	15, // 33: pivot.kb.v1.KnowledgeBaseService.ListDocuments:output_type -> pivot.kb.v1.ListDocumentsResponse
-	17, // 34: pivot.kb.v1.KnowledgeBaseService.DeleteDocument:output_type -> pivot.kb.v1.DeleteDocumentResponse
-	23, // 35: pivot.kb.v1.KnowledgeBaseService.PrepareDocumentUpload:output_type -> pivot.kb.v1.PrepareDocumentUploadResponse
-	25, // 36: pivot.kb.v1.KnowledgeBaseService.ConfirmDocumentUpload:output_type -> pivot.kb.v1.ConfirmDocumentUploadResponse
-	27, // 37: pivot.kb.v1.KnowledgeBaseService.GetDocumentDownloadURL:output_type -> pivot.kb.v1.GetDocumentDownloadURLResponse
-	24, // [24:38] is the sub-list for method output_type
-	10, // [10:24] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	28, // 7: pivot.kb.v1.Document.parsed_at:type_name -> google.protobuf.Timestamp
+	11, // 8: pivot.kb.v1.UploadDocumentResponse.document:type_name -> pivot.kb.v1.Document
+	11, // 9: pivot.kb.v1.ListDocumentsResponse.items:type_name -> pivot.kb.v1.Document
+	11, // 10: pivot.kb.v1.ConfirmDocumentUploadResponse.document:type_name -> pivot.kb.v1.Document
+	1,  // 11: pivot.kb.v1.KnowledgeBaseService.CreateKnowledgeBase:input_type -> pivot.kb.v1.CreateKnowledgeBaseRequest
+	3,  // 12: pivot.kb.v1.KnowledgeBaseService.ListKnowledgeBases:input_type -> pivot.kb.v1.ListKnowledgeBasesRequest
+	5,  // 13: pivot.kb.v1.KnowledgeBaseService.GetKnowledgeBase:input_type -> pivot.kb.v1.GetKnowledgeBaseRequest
+	7,  // 14: pivot.kb.v1.KnowledgeBaseService.UpdateKnowledgeBase:input_type -> pivot.kb.v1.UpdateKnowledgeBaseRequest
+	9,  // 15: pivot.kb.v1.KnowledgeBaseService.DeleteKnowledgeBase:input_type -> pivot.kb.v1.DeleteKnowledgeBaseRequest
+	12, // 16: pivot.kb.v1.KnowledgeBaseService.UploadDocument:input_type -> pivot.kb.v1.UploadDocumentRequest
+	18, // 17: pivot.kb.v1.KnowledgeBaseService.DownloadDocument:input_type -> pivot.kb.v1.DownloadDocumentRequest
+	20, // 18: pivot.kb.v1.KnowledgeBaseService.UploadDocumentSimple:input_type -> pivot.kb.v1.UploadDocumentSimpleRequest
+	18, // 19: pivot.kb.v1.KnowledgeBaseService.DownloadDocumentSimple:input_type -> pivot.kb.v1.DownloadDocumentRequest
+	14, // 20: pivot.kb.v1.KnowledgeBaseService.ListDocuments:input_type -> pivot.kb.v1.ListDocumentsRequest
+	16, // 21: pivot.kb.v1.KnowledgeBaseService.DeleteDocument:input_type -> pivot.kb.v1.DeleteDocumentRequest
+	22, // 22: pivot.kb.v1.KnowledgeBaseService.PrepareDocumentUpload:input_type -> pivot.kb.v1.PrepareDocumentUploadRequest
+	24, // 23: pivot.kb.v1.KnowledgeBaseService.ConfirmDocumentUpload:input_type -> pivot.kb.v1.ConfirmDocumentUploadRequest
+	26, // 24: pivot.kb.v1.KnowledgeBaseService.GetDocumentDownloadURL:input_type -> pivot.kb.v1.GetDocumentDownloadURLRequest
+	2,  // 25: pivot.kb.v1.KnowledgeBaseService.CreateKnowledgeBase:output_type -> pivot.kb.v1.CreateKnowledgeBaseResponse
+	4,  // 26: pivot.kb.v1.KnowledgeBaseService.ListKnowledgeBases:output_type -> pivot.kb.v1.ListKnowledgeBasesResponse
+	6,  // 27: pivot.kb.v1.KnowledgeBaseService.GetKnowledgeBase:output_type -> pivot.kb.v1.GetKnowledgeBaseResponse
+	8,  // 28: pivot.kb.v1.KnowledgeBaseService.UpdateKnowledgeBase:output_type -> pivot.kb.v1.UpdateKnowledgeBaseResponse
+	10, // 29: pivot.kb.v1.KnowledgeBaseService.DeleteKnowledgeBase:output_type -> pivot.kb.v1.DeleteKnowledgeBaseResponse
+	13, // 30: pivot.kb.v1.KnowledgeBaseService.UploadDocument:output_type -> pivot.kb.v1.UploadDocumentResponse
+	19, // 31: pivot.kb.v1.KnowledgeBaseService.DownloadDocument:output_type -> pivot.kb.v1.DownloadDocumentResponse
+	13, // 32: pivot.kb.v1.KnowledgeBaseService.UploadDocumentSimple:output_type -> pivot.kb.v1.UploadDocumentResponse
+	21, // 33: pivot.kb.v1.KnowledgeBaseService.DownloadDocumentSimple:output_type -> pivot.kb.v1.DownloadDocumentSimpleResponse
+	15, // 34: pivot.kb.v1.KnowledgeBaseService.ListDocuments:output_type -> pivot.kb.v1.ListDocumentsResponse
+	17, // 35: pivot.kb.v1.KnowledgeBaseService.DeleteDocument:output_type -> pivot.kb.v1.DeleteDocumentResponse
+	23, // 36: pivot.kb.v1.KnowledgeBaseService.PrepareDocumentUpload:output_type -> pivot.kb.v1.PrepareDocumentUploadResponse
+	25, // 37: pivot.kb.v1.KnowledgeBaseService.ConfirmDocumentUpload:output_type -> pivot.kb.v1.ConfirmDocumentUploadResponse
+	27, // 38: pivot.kb.v1.KnowledgeBaseService.GetDocumentDownloadURL:output_type -> pivot.kb.v1.GetDocumentDownloadURLResponse
+	25, // [25:39] is the sub-list for method output_type
+	11, // [11:25] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_kb_v1_kb_proto_init() }

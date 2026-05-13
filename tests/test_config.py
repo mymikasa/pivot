@@ -40,3 +40,20 @@ def test_settings_rejects_default_secret_key_in_prod(monkeypatch):
 
     with pytest.raises(ValidationError, match="jwt_secret_key"):
         Settings(jwt_secret_key="CHANGE_ME")
+
+
+def test_settings_accepts_parse_service_values():
+    settings = Settings(
+        database_url="sqlite:///:memory:",
+        server_port=8080,
+        cors_origins=["http://localhost:5174"],
+        jwt_secret_key="test-secret",
+        minio_endpoint="localhost:9000",
+        minio_bucket="pivot",
+        embedding_dim=8,
+    )
+
+    assert settings.database_url == "sqlite:///:memory:"
+    assert settings.jwt_secret_key == "test-secret"
+    assert settings.minio_bucket == "pivot"
+    assert settings.embedding_dim == 8

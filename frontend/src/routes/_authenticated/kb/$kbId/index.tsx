@@ -11,6 +11,12 @@ import {
   useDeleteDocumentMutation,
   useDeleteKBMutation,
 } from "@/data/kb"
+import type { KbDocument } from "@/data/kb"
+import {
+  getParseApiErrorMessage,
+  parseTaskOptions,
+  useCreateParseTaskMutation,
+} from "@/data/parse"
 
 export const Route = createFileRoute("/_authenticated/kb/$kbId/")({
   component: KbDetailPage,
@@ -219,59 +225,17 @@ function KbDetailPage() {
             </thead>
             <tbody className="divide-y divide-border-dim">
               {docs.items.map((doc) => (
-                <tr
+                <DocumentRow
                   key={doc.id}
-                  className="transition-colors hover:bg-surface-1"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2.5">
-                      <FileIcon contentType={doc.content_type} />
-                      <Link
-                        to="/kb/$kbId/$docId"
-                        params={{ kbId, docId: doc.id }}
-                        className="text-sm font-medium text-text-primary transition-colors hover:text-accent"
-                      >
-                        {doc.filename}
-                      </Link>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-text-secondary">
-                    {formatFileSize(doc.file_size)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={doc.status} />
-                  </td>
-                  <td className="px-4 py-3 text-sm text-text-secondary">
-                    {formatDate(doc.created_at)}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      data-testid={`doc-delete-button-${doc.id}`}
-                      onClick={() =>
-                        setDeleteDocTarget({
-                          id: doc.id,
-                          name: doc.filename,
-                        })
-                      }
-                      className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-danger-dim hover:text-danger"
-                      title="删除文档"
-                    >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="3 6 5 6 21 6" />
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
+                  kbId={kbId}
+                  doc={doc}
+                  onDelete={() =>
+                    setDeleteDocTarget({
+                      id: doc.id,
+                      name: doc.filename,
+                    })
+                  }
+                />
               ))}
             </tbody>
           </table>
@@ -330,6 +294,147 @@ function KbDetailPage() {
   )
 }
 
+function DocumentRow({
+  kbId,
+  doc,
+  onDelete,
+}: {
+  kbId: string
+  doc: KbDocument
+  onDelete: () => void
+}) {
+  const [localTaskId, setLocalTaskId] = useState<number | null>(
+    getParseTaskId(doc),
+  )
+  const createParseTaskMutation = useCreateParseTaskMutation(kbId)
+  const parseTaskQuery = useQuery(parseTaskOptions(localTaskId))
+  const parseTask = parseTaskQuery.data
+  const parseStatus = parseTask?.status ?? getParseStatus(doc)
+  const parseProgress = parseTask?.progress ?? getParseProgress(doc)
+  const parseError = parseTask?.errorMessage ?? getParseError(doc)
+  const objectKey = getObjectKey(doc)
+  const isParsing = parseStatus === "pending" || parseStatus === "running"
+  const canParse = doc.status === "ready" && objectKey && !isParsing
+
+  function handleParse() {
+    createParseTaskMutation.mutate(
+      {
+        kbId,
+        documentId: doc.id,
+        objectKey,
+        contentType: doc.content_type,
+      },
+      {
+        onSuccess: (task) => setLocalTaskId(task.taskId),
+      },
+    )
+  }
+
+  return (
+    <tr className="transition-colors hover:bg-surface-1">
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <FileIcon contentType={doc.content_type} />
+          <Link
+            to="/kb/$kbId/$docId"
+            params={{ kbId, docId: doc.id }}
+            className="text-sm font-medium text-text-primary transition-colors hover:text-accent"
+          >
+            {doc.filename}
+          </Link>
+        </div>
+      </td>
+      <td className="px-4 py-3 text-sm text-text-secondary">
+        {formatFileSize(doc.file_size)}
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex flex-col gap-1">
+          <StatusBadge status={doc.status} />
+          <ParseStatusBadge status={parseStatus} />
+          {isParsing && (
+            <div className="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2">
+              <div
+                className="h-full rounded-full bg-accent transition-all"
+                style={{ width: `${parseProgress}%` }}
+              />
+            </div>
+          )}
+          {parseStatus === "failed" && parseError && (
+            <span className="max-w-48 truncate text-xs text-danger">
+              {parseError}
+            </span>
+          )}
+        </div>
+      </td>
+      <td className="px-4 py-3 text-sm text-text-secondary">
+        {formatDate(doc.created_at)}
+      </td>
+      <td className="px-4 py-3 text-right">
+        <div className="flex justify-end gap-1">
+          <button
+            data-testid={`doc-parse-button-${doc.id}`}
+            onClick={handleParse}
+            disabled={!canParse || createParseTaskMutation.isPending}
+            className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-accent-dim hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
+            title={
+              isParsing
+                ? "解析中"
+                : objectKey
+                  ? "解析文档"
+                  : "缺少对象 Key，无法解析"
+            }
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 2v6" />
+              <path d="M12 16v6" />
+              <path d="m4.93 4.93 4.24 4.24" />
+              <path d="m14.83 14.83 4.24 4.24" />
+              <path d="M2 12h6" />
+              <path d="M16 12h6" />
+              <path d="m4.93 19.07 4.24-4.24" />
+              <path d="m14.83 9.17 4.24-4.24" />
+            </svg>
+          </button>
+          <button
+            data-testid={`doc-delete-button-${doc.id}`}
+            onClick={onDelete}
+            className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-danger-dim hover:text-danger"
+            title="删除文档"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </button>
+        </div>
+        {createParseTaskMutation.isError && (
+          <p className="mt-1 text-xs text-danger">
+            {getParseApiErrorMessage(createParseTaskMutation.error)}
+          </p>
+        )}
+      </td>
+    </tr>
+  )
+}
+
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
     uploading: "bg-amber-50 text-amber-600",
@@ -344,6 +449,32 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${styles[status] ?? "bg-surface-2 text-text-muted"}`}
+    >
+      {labels[status] ?? status}
+    </span>
+  )
+}
+
+function ParseStatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    not_parsed: "bg-surface-2 text-text-muted",
+    pending: "bg-amber-50 text-amber-600",
+    running: "bg-blue-50 text-blue-600",
+    completed: "bg-teal-50 text-teal-600",
+    failed: "bg-red-50 text-red-600",
+    cancelled: "bg-surface-2 text-text-muted",
+  }
+  const labels: Record<string, string> = {
+    not_parsed: "未解析",
+    pending: "等待解析",
+    running: "解析中",
+    completed: "已解析",
+    failed: "解析失败",
+    cancelled: "已取消",
+  }
+  return (
+    <span
+      className={`inline-flex w-fit rounded-full px-2 py-0.5 text-xs font-medium ${styles[status] ?? "bg-surface-2 text-text-muted"}`}
     >
       {labels[status] ?? status}
     </span>
@@ -380,6 +511,26 @@ function FileIcon({ contentType }: { contentType: string }) {
       <polyline points="14 2 14 8 20 8" />
     </svg>
   )
+}
+
+function getObjectKey(doc: KbDocument): string {
+  return doc.objectKey ?? doc.object_key ?? ""
+}
+
+function getParseStatus(doc: KbDocument): string {
+  return doc.parseStatus ?? doc.parse_status ?? "not_parsed"
+}
+
+function getParseTaskId(doc: KbDocument): number | null {
+  return doc.parseTaskId ?? doc.parse_task_id ?? null
+}
+
+function getParseProgress(doc: KbDocument): number {
+  return doc.parseProgress ?? doc.parse_progress ?? 0
+}
+
+function getParseError(doc: KbDocument): string {
+  return doc.parseError ?? doc.parse_error ?? ""
 }
 
 function formatFileSize(bytes: number): string {
