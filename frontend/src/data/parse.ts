@@ -56,6 +56,13 @@ export function useParseTask(taskId: number | null) {
 export function parseTaskListOptions(kbId?: number, documentId?: number) {
   return queryOptions({
     queryKey: ["parse", "tasks", { kbId, documentId }],
+    refetchInterval: (query) => {
+      const tasks = query.state.data?.tasks ?? []
+      const hasActive = tasks.some(
+        (t) => t.status === "pending" || t.status === "running",
+      )
+      return hasActive ? 60000 : false
+    },
     queryFn: async () => {
       return unwrap<{ tasks: ParseTaskResponse[] }>(
         await listParseTasksApiV1ParseTasksGet({
@@ -88,6 +95,9 @@ export function useCreateParseTaskMutation(kbId: string) {
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ["kb", kbId, "documents"],
+      })
+      void queryClient.invalidateQueries({
+        queryKey: ["parse", "tasks"],
       })
     },
   })

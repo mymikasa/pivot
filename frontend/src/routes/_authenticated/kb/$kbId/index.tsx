@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 
@@ -14,9 +14,11 @@ import {
 import type { KbDocument } from "@/data/kb"
 import {
   getParseApiErrorMessage,
-  parseTaskOptions,
+  parseTaskListOptions,
   useCreateParseTaskMutation,
 } from "@/data/parse"
+
+import type { ParseTask } from "@/data/parse"
 
 export const Route = createFileRoute("/_authenticated/kb/$kbId/")({
   component: KbDetailPage,
@@ -31,6 +33,16 @@ function KbDetailPage() {
   )
   const deleteKbMutation = useDeleteKBMutation()
   const deleteDocMutation = useDeleteDocumentMutation(kbId)
+  const { data: parseTasksData } = useQuery(
+    parseTaskListOptions(Number(kbId)),
+  )
+  const parseTaskMap = useMemo(() => {
+    const map = new Map<string, ParseTask>()
+    for (const task of parseTasksData?.tasks ?? []) {
+      map.set(String(task.document_id), task)
+    }
+    return map
+  }, [parseTasksData])
 
   const [editOpen, setEditOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
@@ -229,6 +241,7 @@ function KbDetailPage() {
                   key={doc.id}
                   kbId={kbId}
                   doc={doc}
+                  parseTask={parseTaskMap.get(doc.id) ?? null}
                   onDelete={() =>
                     setDeleteDocTarget({
                       id: doc.id,
@@ -297,18 +310,15 @@ function KbDetailPage() {
 function DocumentRow({
   kbId,
   doc,
+  parseTask,
   onDelete,
 }: {
   kbId: string
   doc: KbDocument
+  parseTask: ParseTask | null
   onDelete: () => void
 }) {
-  const [localTaskId, setLocalTaskId] = useState<number | null>(
-    getParseTaskId(doc),
-  )
   const createParseTaskMutation = useCreateParseTaskMutation(kbId)
-  const parseTaskQuery = useQuery(parseTaskOptions(localTaskId))
-  const parseTask = parseTaskQuery.data
   const parseStatus = parseTask?.status ?? getParseStatus(doc)
   const parseProgress = parseTask?.progress ?? getParseProgress(doc)
   const parseError = parseTask?.error_message ?? getParseError(doc)
@@ -321,16 +331,11 @@ function DocumentRow({
   const canParse = status === "ready" && objectKey.length > 0 && !isParsing
 
   function handleParse() {
-    createParseTaskMutation.mutate(
-      {
-        documentId: doc.id,
-        objectKey,
-        contentType,
-      },
-      {
-        onSuccess: (task) => setLocalTaskId(task.task_id),
-      },
-    )
+    createParseTaskMutation.mutate({
+      documentId: doc.id,
+      objectKey,
+      contentType,
+    })
   }
 
   return (
@@ -352,8 +357,10 @@ function DocumentRow({
       </td>
       <td className="px-4 py-3">
         <div className="flex flex-col gap-1">
-          <StatusBadge status={status} />
-          <ParseStatusBadge status={parseStatus} />
+          <DocStatusBadge
+            docStatus={status}
+            parseStatus={parseStatus}
+          />
           {isParsing && (
             <div className="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2">
               <div
@@ -438,48 +445,46 @@ function DocumentRow({
   )
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    uploading: "bg-amber-50 text-amber-600",
-    ready: "bg-teal-50 text-teal-600",
-    error: "bg-red-50 text-red-600",
-  }
-  const labels: Record<string, string> = {
-    uploading: "上传中",
-    ready: "就绪",
-    error: "错误",
-  }
-  return (
-    <span
-      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${styles[status] ?? "bg-surface-2 text-text-muted"}`}
-    >
-      {labels[status] ?? status}
-    </span>
-  )
-}
+function DocStatusBadge({
+  docStatus,
+  parseStatus,
+}: {
+  docStatus: string
+  parseStatus: string
+}) {
+  let style = "bg-surface-2 text-text-muted"
+  let label = parseStatus
 
-function ParseStatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    not_parsed: "bg-surface-2 text-text-muted",
-    pending: "bg-amber-50 text-amber-600",
-    running: "bg-blue-50 text-blue-600",
-    completed: "bg-teal-50 text-teal-600",
-    failed: "bg-red-50 text-red-600",
-    cancelled: "bg-surface-2 text-text-muted",
+  if (docStatus === "uploading") {
+    style = "bg-amber-50 text-amber-600"
+    label = "上传中"
+  } else if (docStatus === "error") {
+    style = "bg-red-50 text-red-600"
+    label = "错误"
+  } else if (parseStatus === "not_parsed") {
+    style = "bg-teal-50 text-teal-600"
+    label = "就绪"
+  } else if (parseStatus === "pending") {
+    style = "bg-amber-50 text-amber-600"
+    label = "等待解析"
+  } else if (parseStatus === "running") {
+    style = "bg-blue-50 text-blue-600"
+    label = "解析中"
+  } else if (parseStatus === "completed") {
+    style = "bg-teal-50 text-teal-600"
+    label = "已解析"
+  } else if (parseStatus === "failed") {
+    style = "bg-red-50 text-red-600"
+    label = "解析失败"
+  } else if (parseStatus === "cancelled") {
+    label = "已取消"
   }
-  const labels: Record<string, string> = {
-    not_parsed: "未解析",
-    pending: "等待解析",
-    running: "解析中",
-    completed: "已解析",
-    failed: "解析失败",
-    cancelled: "已取消",
-  }
+
   return (
     <span
-      className={`inline-flex w-fit rounded-full px-2 py-0.5 text-xs font-medium ${styles[status] ?? "bg-surface-2 text-text-muted"}`}
+      className={`inline-flex w-fit rounded-full px-2 py-0.5 text-xs font-medium ${style}`}
     >
-      {labels[status] ?? status}
+      {label}
     </span>
   )
 }
@@ -538,12 +543,6 @@ function getDocumentStatus(doc: KbDocument): string {
 
 function getParseStatus(doc: KbDocument): string {
   return doc.parseStatus ?? doc.parse_status ?? "not_parsed"
-}
-
-function getParseTaskId(doc: KbDocument): number | null {
-  const raw = doc.parseTaskId ?? doc.parse_task_id
-  const value = typeof raw === "string" ? Number(raw) : raw
-  return value && value > 0 ? value : null
 }
 
 function getParseProgress(doc: KbDocument): number {
