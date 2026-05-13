@@ -8,6 +8,7 @@ from pydantic import ValidationError
 
 
 VALID_ENVS = ("dev", "test", "prod")
+DEFAULT_CONFIG_PATH = Path(__file__).resolve().parent / "config.yaml"
 
 
 def parse_args() -> argparse.Namespace:
@@ -16,19 +17,24 @@ def parse_args() -> argparse.Namespace:
         "--env",
         choices=VALID_ENVS,
         default="dev",
-        help="运行环境，支持 dev、test、prod，默认 dev",
+        help="运行环境，支持 dev、test、prod，默认 dev；配置统一从 YAML 读取",
+    )
+    parser.add_argument(
+        "--config",
+        default=str(DEFAULT_CONFIG_PATH),
+        help="YAML 配置文件路径，默认 src/config.yaml",
     )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    env_file = Path.cwd() / f".env.{args.env}"
-    if not env_file.is_file():
-        print(f"配置文件不存在：{env_file}", file=sys.stderr)
+    config_file = Path(args.config)
+    if not config_file.is_file():
+        print(f"配置文件不存在：{config_file}", file=sys.stderr)
         return 1
 
-    os.environ["PIVOT_ENV_FILE"] = str(env_file)
+    os.environ["PIVOT_CONFIG_FILE"] = str(config_file)
 
     try:
         from src.core.config import settings

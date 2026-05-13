@@ -32,12 +32,15 @@ import type {
 export type { V1KnowledgeBase as KnowledgeBase }
 
 export interface KbDocument extends V1Document {
+  content_type?: string
+  file_size?: number
+  created_at?: string
   object_key?: string
   objectKey?: string
   parse_status?: string
   parseStatus?: string
-  parse_task_id?: number
-  parseTaskId?: number
+  parse_task_id?: number | string
+  parseTaskId?: number | string
   parse_progress?: number
   parseProgress?: number
   parse_error?: string

@@ -3,7 +3,7 @@ grpc:
 http:
   addr: ":8082"
 db:
-  dsn: "pivot:pivot_pass_2026@tcp(localhost:3306)/pivot?charset=utf8mb4&parseTime=True&loc=Local"
+  dsn: "pivot:pivot_pass_2026@tcp(localhost:13306)/pivot?charset=utf8mb4&parseTime=True&loc=Local"
 log:
   level: "INFO"
 jwt:
@@ -13,7 +13,7 @@ jwt:
   audience: user
   secret: "pivot-dev-jwt-secret-2026-change-in-prod"
 minio:
-  endpoint: "localhost:9000"
+  endpoint: "localhost:19000"
   bucket: "pivot"
   region: "us-east-1"
   access_key: "minioadmin"

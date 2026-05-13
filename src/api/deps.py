@@ -18,6 +18,8 @@ def get_current_parse_user(
         credentials.credentials,
         secret=settings.jwt_secret_key,
         algorithm=settings.jwt_algorithm,
+        issuer=settings.jwt_issuer,
+        audience=settings.jwt_audience,
     )
 
 

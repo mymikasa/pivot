@@ -3,7 +3,7 @@ grpc:
 http:
   addr: ":8081"
 db:
-  dsn: "pivot:pivot_pass_2026@tcp(localhost:3306)/pivot?charset=utf8mb4&parseTime=True&loc=Local"
+  dsn: "pivot:pivot_pass_2026@tcp(localhost:13306)/pivot?charset=utf8mb4&parseTime=True&loc=Local"
 log:
   level: "INFO"
 jwt:

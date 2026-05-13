@@ -13,7 +13,11 @@ def auth_headers() -> dict[str, str]:
     token = jwt.encode(
         {
             "sub": "1",
+            "uid": 1,
             "role": "admin",
+            "typ": "access",
+            "iss": "pivot",
+            "aud": "user",
             "exp": datetime.now(timezone.utc) + timedelta(minutes=5),
         },
         settings.jwt_secret_key,

@@ -3,7 +3,7 @@ services:
     image: mysql:8.0.39
     container_name: pivot-mysql
     ports:
-      - "3306:3306"
+      - "13306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: pivot_root_2026
       MYSQL_DATABASE: pivot
@@ -16,8 +16,8 @@ services:
     image: pgsty/minio:RELEASE.2026-03-25T00-00-00Z
     container_name: pivot-minio
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "19000:9000"
+      - "19001:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin

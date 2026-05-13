@@ -11,20 +11,36 @@ def test_decode_access_token_returns_user():
     token = jwt.encode(
         {
             "sub": "123",
+            "uid": 123,
             "role": "admin",
+            "typ": "access",
+            "iss": "pivot",
+            "aud": "user",
             "exp": datetime.now(timezone.utc) + timedelta(minutes=5),
         },
         "test-secret",
         algorithm="HS256",
     )
 
-    user = decode_access_token(token, secret="test-secret", algorithm="HS256")
+    user = decode_access_token(
+        token,
+        secret="test-secret",
+        algorithm="HS256",
+        issuer="pivot",
+        audience="user",
+    )
 
     assert user == AuthenticatedUser(user_id=123, role="admin")
 
 
 def test_decode_access_token_rejects_invalid_token():
     with pytest.raises(HTTPException) as exc:
-        decode_access_token("bad.token", secret="test-secret", algorithm="HS256")
+        decode_access_token(
+            "bad.token",
+            secret="test-secret",
+            algorithm="HS256",
+            issuer="pivot",
+            audience="user",
+        )
 
     assert exc.value.status_code == 401
