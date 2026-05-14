@@ -82,3 +82,9 @@ func (d *KbDAO) DeleteDocument(ctx context.Context, kbID, docID int64) error {
 		Where("kb_id = ? AND id = ?", kbID, docID).
 		Delete(&Document{}).Error
 }
+
+func (d *KbDAO) DeleteParseTasks(ctx context.Context, kbID, docID int64) error {
+	return d.db.WithContext(ctx).
+		Exec("DELETE FROM parse_tasks WHERE kb_id = ? AND document_id = ?", kbID, docID).
+		Error
+}

@@ -15,7 +15,10 @@ def test_run_one_task_completes_pending_task(db):
     def download(_object_key: str) -> bytes:
         return b"hello pivot"
 
-    ran = run_one_task(db, download_file=download)
+    def ingest_file(*_args, **_kwargs) -> int:
+        return 1
+
+    ran = run_one_task(db, download_file=download, ingest_file=ingest_file)
 
     refreshed = manager.get_task(task.id)
     assert ran is True

@@ -191,6 +191,10 @@ func (s *KbService) DeleteDocument(ctx context.Context, kbID, docID int64) error
 		s.logger.ErrorContext(ctx, "delete chunks from milvus", slog.Any("err", err))
 	}
 
+	if err := s.repo.DeleteParseTasks(ctx, kbID, docID); err != nil {
+		s.logger.ErrorContext(ctx, "delete parse tasks", slog.Any("err", err))
+	}
+
 	return s.repo.DeleteDocument(ctx, kbID, docID)
 }
 
@@ -316,6 +320,10 @@ func (s *KbService) GetDocumentDownloadURL(ctx context.Context, kbID, docID int6
 
 func (s *KbService) ListChunks(ctx context.Context, kbID, docID int64) ([]domain.Chunk, error) {
 	return s.repo.FindChunksByDocument(ctx, kbID, docID)
+}
+
+func (s *KbService) DeleteChunk(ctx context.Context, kbID, docID int64, chunkIndex int32) error {
+	return s.repo.DeleteChunk(ctx, kbID, docID, chunkIndex)
 }
 
 func (s *KbService) GetParseStatus(ctx context.Context, kbID, docID int64) (domain.Document, error) {

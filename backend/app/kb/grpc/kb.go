@@ -231,15 +231,46 @@ func (g *KbServer) ListChunks(ctx context.Context, req *kbv1.ListChunksRequest) 
 	}
 	pb := make([]*kbv1.Chunk, 0, len(items))
 	for _, c := range items {
-		pb = append(pb, &kbv1.Chunk{
-			KbId:       c.KBID,
-			DocumentId: c.DocumentID,
-			ChunkIndex: c.ChunkIndex,
-			Content:    c.Content,
-			TokenCount: c.TokenCount,
-		})
+		item := &kbv1.Chunk{
+			Id:           c.ID,
+			KbId:         c.KBID,
+			DocumentId:   c.DocumentID,
+			ChunkIndex:   c.ChunkIndex,
+			Content:      c.Content,
+			TokenCount:   c.TokenCount,
+			SectionTitle: c.SectionTitle,
+			SectionPath:  c.SectionPath,
+			Filename:     c.Filename,
+			ContentType:  c.ContentType,
+			ChunkSize:    c.ChunkSize,
+			ChunkOverlap: c.ChunkOverlap,
+			Version:      c.Version,
+		}
+		if c.SourcePage != nil {
+			item.SourcePage = *c.SourcePage
+		}
+		if c.UserID != nil {
+			item.UserId = *c.UserID
+		}
+		if c.MilvusID != nil {
+			item.MilvusId = *c.MilvusID
+		}
+		if !c.CreatedAt.IsZero() {
+			item.CreatedAt = timestamppb.New(c.CreatedAt)
+		}
+		if !c.UpdatedAt.IsZero() {
+			item.UpdatedAt = timestamppb.New(c.UpdatedAt)
+		}
+		pb = append(pb, item)
 	}
 	return &kbv1.ListChunksResponse{Items: pb}, nil
+}
+
+func (g *KbServer) DeleteChunk(ctx context.Context, req *kbv1.DeleteChunkRequest) (*kbv1.DeleteChunkResponse, error) {
+	if err := g.svc.DeleteChunk(ctx, req.GetKbId(), req.GetDocId(), req.GetChunkIndex()); err != nil {
+		return nil, toGRPCError(err, g.logger)
+	}
+	return &kbv1.DeleteChunkResponse{}, nil
 }
 
 func (g *KbServer) GetParseStatus(ctx context.Context, req *kbv1.GetParseStatusRequest) (*kbv1.GetParseStatusResponse, error) {

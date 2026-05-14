@@ -27,5 +27,6 @@ type Service interface {
 
 	// Chunk & Parse
 	ListChunks(ctx context.Context, kbID, docID int64) ([]domain.Chunk, error)
+	DeleteChunk(ctx context.Context, kbID, docID int64, chunkIndex int32) error
 	GetParseStatus(ctx context.Context, kbID, docID int64) (domain.Document, error)
 }

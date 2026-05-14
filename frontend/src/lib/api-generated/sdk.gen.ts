@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { KnowledgeBaseServiceConfirmDocumentUploadData, KnowledgeBaseServiceConfirmDocumentUploadErrors, KnowledgeBaseServiceConfirmDocumentUploadResponses, KnowledgeBaseServiceCreateKnowledgeBaseData, KnowledgeBaseServiceCreateKnowledgeBaseErrors, KnowledgeBaseServiceCreateKnowledgeBaseResponses, KnowledgeBaseServiceDeleteDocumentData, KnowledgeBaseServiceDeleteDocumentErrors, KnowledgeBaseServiceDeleteDocumentResponses, KnowledgeBaseServiceDeleteKnowledgeBaseData, KnowledgeBaseServiceDeleteKnowledgeBaseErrors, KnowledgeBaseServiceDeleteKnowledgeBaseResponses, KnowledgeBaseServiceDownloadDocumentSimpleData, KnowledgeBaseServiceDownloadDocumentSimpleErrors, KnowledgeBaseServiceDownloadDocumentSimpleResponses, KnowledgeBaseServiceGetDocumentDownloadUrlData, KnowledgeBaseServiceGetDocumentDownloadUrlErrors, KnowledgeBaseServiceGetDocumentDownloadUrlResponses, KnowledgeBaseServiceGetKnowledgeBaseData, KnowledgeBaseServiceGetKnowledgeBaseErrors, KnowledgeBaseServiceGetKnowledgeBaseResponses, KnowledgeBaseServiceListChunksData, KnowledgeBaseServiceListChunksErrors, KnowledgeBaseServiceListChunksResponses, KnowledgeBaseServiceListDocumentsData, KnowledgeBaseServiceListDocumentsErrors, KnowledgeBaseServiceListDocumentsResponses, KnowledgeBaseServiceListKnowledgeBasesData, KnowledgeBaseServiceListKnowledgeBasesErrors, KnowledgeBaseServiceListKnowledgeBasesResponses, KnowledgeBaseServicePrepareDocumentUploadData, KnowledgeBaseServicePrepareDocumentUploadErrors, KnowledgeBaseServicePrepareDocumentUploadResponses, KnowledgeBaseServiceUpdateKnowledgeBaseData, KnowledgeBaseServiceUpdateKnowledgeBaseErrors, KnowledgeBaseServiceUpdateKnowledgeBaseResponses, KnowledgeBaseServiceUploadDocumentSimpleData, KnowledgeBaseServiceUploadDocumentSimpleErrors, KnowledgeBaseServiceUploadDocumentSimpleResponses, UserServiceGetAllUserData, UserServiceGetAllUserErrors, UserServiceGetAllUserResponses, UserServiceGetCurrentUserData, UserServiceGetCurrentUserErrors, UserServiceGetCurrentUserResponses, UserServiceLoginData, UserServiceLoginErrors, UserServiceLoginResponses, UserServiceLogoutData, UserServiceLogoutErrors, UserServiceLogoutResponses, UserServiceRefreshTokenData, UserServiceRefreshTokenErrors, UserServiceRefreshTokenResponses, UserServiceRegisterData, UserServiceRegisterErrors, UserServiceRegisterResponses } from './types.gen';
+import type { KnowledgeBaseServiceConfirmDocumentUploadData, KnowledgeBaseServiceConfirmDocumentUploadErrors, KnowledgeBaseServiceConfirmDocumentUploadResponses, KnowledgeBaseServiceCreateKnowledgeBaseData, KnowledgeBaseServiceCreateKnowledgeBaseErrors, KnowledgeBaseServiceCreateKnowledgeBaseResponses, KnowledgeBaseServiceDeleteChunkData, KnowledgeBaseServiceDeleteChunkErrors, KnowledgeBaseServiceDeleteChunkResponses, KnowledgeBaseServiceDeleteDocumentData, KnowledgeBaseServiceDeleteDocumentErrors, KnowledgeBaseServiceDeleteDocumentResponses, KnowledgeBaseServiceDeleteKnowledgeBaseData, KnowledgeBaseServiceDeleteKnowledgeBaseErrors, KnowledgeBaseServiceDeleteKnowledgeBaseResponses, KnowledgeBaseServiceDownloadDocumentSimpleData, KnowledgeBaseServiceDownloadDocumentSimpleErrors, KnowledgeBaseServiceDownloadDocumentSimpleResponses, KnowledgeBaseServiceGetDocumentDownloadUrlData, KnowledgeBaseServiceGetDocumentDownloadUrlErrors, KnowledgeBaseServiceGetDocumentDownloadUrlResponses, KnowledgeBaseServiceGetKnowledgeBaseData, KnowledgeBaseServiceGetKnowledgeBaseErrors, KnowledgeBaseServiceGetKnowledgeBaseResponses, KnowledgeBaseServiceGetParseStatusData, KnowledgeBaseServiceGetParseStatusErrors, KnowledgeBaseServiceGetParseStatusResponses, KnowledgeBaseServiceListChunksData, KnowledgeBaseServiceListChunksErrors, KnowledgeBaseServiceListChunksResponses, KnowledgeBaseServiceListDocumentsData, KnowledgeBaseServiceListDocumentsErrors, KnowledgeBaseServiceListDocumentsResponses, KnowledgeBaseServiceListKnowledgeBasesData, KnowledgeBaseServiceListKnowledgeBasesErrors, KnowledgeBaseServiceListKnowledgeBasesResponses, KnowledgeBaseServicePrepareDocumentUploadData, KnowledgeBaseServicePrepareDocumentUploadErrors, KnowledgeBaseServicePrepareDocumentUploadResponses, KnowledgeBaseServiceUpdateKnowledgeBaseData, KnowledgeBaseServiceUpdateKnowledgeBaseErrors, KnowledgeBaseServiceUpdateKnowledgeBaseResponses, KnowledgeBaseServiceUploadDocumentSimpleData, KnowledgeBaseServiceUploadDocumentSimpleErrors, KnowledgeBaseServiceUploadDocumentSimpleResponses, UserServiceGetAllUserData, UserServiceGetAllUserErrors, UserServiceGetAllUserResponses, UserServiceGetCurrentUserData, UserServiceGetCurrentUserErrors, UserServiceGetCurrentUserResponses, UserServiceLoginData, UserServiceLoginErrors, UserServiceLoginResponses, UserServiceLogoutData, UserServiceLogoutErrors, UserServiceLogoutResponses, UserServiceRefreshTokenData, UserServiceRefreshTokenErrors, UserServiceRefreshTokenResponses, UserServiceRegisterData, UserServiceRegisterErrors, UserServiceRegisterResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -101,6 +101,21 @@ export const knowledgeBaseServiceUploadDocumentSimple = <ThrowOnError extends bo
     }
 });
 
+/**
+ * Chunk & parse status
+ */
+export const knowledgeBaseServiceListChunks = <ThrowOnError extends boolean = false>(options: Options<KnowledgeBaseServiceListChunksData, ThrowOnError>) => (options.client ?? client).get<KnowledgeBaseServiceListChunksResponses, KnowledgeBaseServiceListChunksErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/kb/{kbId}/documents/{docId}/chunks',
+    ...options
+});
+
+export const knowledgeBaseServiceDeleteChunk = <ThrowOnError extends boolean = false>(options: Options<KnowledgeBaseServiceDeleteChunkData, ThrowOnError>) => (options.client ?? client).post<KnowledgeBaseServiceDeleteChunkResponses, KnowledgeBaseServiceDeleteChunkErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/kb/{kbId}/documents/{docId}/chunks/{chunkIndex}/delete',
+    ...options
+});
+
 export const knowledgeBaseServiceDeleteDocument = <ThrowOnError extends boolean = false>(options: Options<KnowledgeBaseServiceDeleteDocumentData, ThrowOnError>) => (options.client ?? client).post<KnowledgeBaseServiceDeleteDocumentResponses, KnowledgeBaseServiceDeleteDocumentErrors, ThrowOnError>({
     responseType: 'json',
     url: '/api/v1/kb/{kbId}/documents/{docId}/delete',
@@ -119,9 +134,9 @@ export const knowledgeBaseServiceGetDocumentDownloadUrl = <ThrowOnError extends 
     ...options
 });
 
-export const knowledgeBaseServiceListChunks = <ThrowOnError extends boolean = false>(options: Options<KnowledgeBaseServiceListChunksData, ThrowOnError>) => (options.client ?? client).get<KnowledgeBaseServiceListChunksResponses, KnowledgeBaseServiceListChunksErrors, ThrowOnError>({
+export const knowledgeBaseServiceGetParseStatus = <ThrowOnError extends boolean = false>(options: Options<KnowledgeBaseServiceGetParseStatusData, ThrowOnError>) => (options.client ?? client).get<KnowledgeBaseServiceGetParseStatusResponses, KnowledgeBaseServiceGetParseStatusErrors, ThrowOnError>({
     responseType: 'json',
-    url: '/api/v1/kb/{kbId}/documents/{docId}/chunks',
+    url: '/api/v1/kb/{kbId}/documents/{docId}/parse-status',
     ...options
 });
 

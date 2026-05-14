@@ -46,6 +46,18 @@ export type V1Chunk = {
     chunkIndex?: number;
     content?: string;
     tokenCount?: number;
+    sourcePage?: number;
+    sectionTitle?: string;
+    sectionPath?: string;
+    filename?: string;
+    contentType?: string;
+    chunkSize?: number;
+    chunkOverlap?: number;
+    version?: number;
+    userId?: string;
+    milvusId?: string;
+    createdAt?: string;
+    updatedAt?: string;
 };
 
 export type V1ConfirmDocumentUploadResponse = {
@@ -59,6 +71,10 @@ export type V1CreateKnowledgeBaseRequest = {
 
 export type V1CreateKnowledgeBaseResponse = {
     kb?: V1KnowledgeBase;
+};
+
+export type V1DeleteChunkResponse = {
+    [key: string]: unknown;
 };
 
 export type V1DeleteDocumentResponse = {
@@ -77,6 +93,12 @@ export type V1Document = {
     fileSize?: number;
     status?: string;
     createdAt?: string;
+    parseStatus?: string;
+    parseTaskId?: string;
+    parseProgress?: number;
+    parseError?: string;
+    parsedAt?: string;
+    objectKey?: string;
 };
 
 export type V1DownloadDocumentSimpleResponse = {
@@ -103,6 +125,13 @@ export type V1GetKnowledgeBaseResponse = {
     kb?: V1KnowledgeBase;
 };
 
+export type V1GetParseStatusResponse = {
+    status?: string;
+    progress?: number;
+    error?: string;
+    parsedAt?: string;
+};
+
 export type V1KnowledgeBase = {
     id?: string;
     name?: string;
@@ -113,12 +142,12 @@ export type V1KnowledgeBase = {
     updatedAt?: string;
 };
 
-export type V1ListDocumentsResponse = {
-    items?: Array<V1Document>;
-};
-
 export type V1ListChunksResponse = {
     items?: Array<V1Chunk>;
+};
+
+export type V1ListDocumentsResponse = {
+    items?: Array<V1Document>;
 };
 
 export type V1ListKnowledgeBasesResponse = {
@@ -424,6 +453,63 @@ export type KnowledgeBaseServiceUploadDocumentSimpleResponses = {
 
 export type KnowledgeBaseServiceUploadDocumentSimpleResponse = KnowledgeBaseServiceUploadDocumentSimpleResponses[keyof KnowledgeBaseServiceUploadDocumentSimpleResponses];
 
+export type KnowledgeBaseServiceListChunksData = {
+    body?: never;
+    path: {
+        kbId: string;
+        docId: string;
+    };
+    query?: never;
+    url: '/api/v1/kb/{kbId}/documents/{docId}/chunks';
+};
+
+export type KnowledgeBaseServiceListChunksErrors = {
+    /**
+     * An unexpected error response.
+     */
+    default: RpcStatus;
+};
+
+export type KnowledgeBaseServiceListChunksError = KnowledgeBaseServiceListChunksErrors[keyof KnowledgeBaseServiceListChunksErrors];
+
+export type KnowledgeBaseServiceListChunksResponses = {
+    /**
+     * A successful response.
+     */
+    200: V1ListChunksResponse;
+};
+
+export type KnowledgeBaseServiceListChunksResponse = KnowledgeBaseServiceListChunksResponses[keyof KnowledgeBaseServiceListChunksResponses];
+
+export type KnowledgeBaseServiceDeleteChunkData = {
+    body?: never;
+    path: {
+        kbId: string;
+        docId: string;
+        chunkIndex: number;
+    };
+    query?: never;
+    url: '/api/v1/kb/{kbId}/documents/{docId}/chunks/{chunkIndex}/delete';
+};
+
+export type KnowledgeBaseServiceDeleteChunkErrors = {
+    /**
+     * An unexpected error response.
+     */
+    default: RpcStatus;
+};
+
+export type KnowledgeBaseServiceDeleteChunkError = KnowledgeBaseServiceDeleteChunkErrors[keyof KnowledgeBaseServiceDeleteChunkErrors];
+
+export type KnowledgeBaseServiceDeleteChunkResponses = {
+    /**
+     * A successful response.
+     */
+    200: V1DeleteChunkResponse;
+};
+
+export type KnowledgeBaseServiceDeleteChunkResponse = KnowledgeBaseServiceDeleteChunkResponses[keyof KnowledgeBaseServiceDeleteChunkResponses];
+
 export type KnowledgeBaseServiceDeleteDocumentData = {
     body?: never;
     path: {
@@ -508,33 +594,33 @@ export type KnowledgeBaseServiceGetDocumentDownloadUrlResponses = {
 
 export type KnowledgeBaseServiceGetDocumentDownloadUrlResponse = KnowledgeBaseServiceGetDocumentDownloadUrlResponses[keyof KnowledgeBaseServiceGetDocumentDownloadUrlResponses];
 
-export type KnowledgeBaseServiceListChunksData = {
+export type KnowledgeBaseServiceGetParseStatusData = {
     body?: never;
     path: {
         kbId: string;
         docId: string;
     };
     query?: never;
-    url: '/api/v1/kb/{kbId}/documents/{docId}/chunks';
+    url: '/api/v1/kb/{kbId}/documents/{docId}/parse-status';
 };
 
-export type KnowledgeBaseServiceListChunksErrors = {
+export type KnowledgeBaseServiceGetParseStatusErrors = {
     /**
      * An unexpected error response.
      */
     default: RpcStatus;
 };
 
-export type KnowledgeBaseServiceListChunksError = KnowledgeBaseServiceListChunksErrors[keyof KnowledgeBaseServiceListChunksErrors];
+export type KnowledgeBaseServiceGetParseStatusError = KnowledgeBaseServiceGetParseStatusErrors[keyof KnowledgeBaseServiceGetParseStatusErrors];
 
-export type KnowledgeBaseServiceListChunksResponses = {
+export type KnowledgeBaseServiceGetParseStatusResponses = {
     /**
      * A successful response.
      */
-    200: V1ListChunksResponse;
+    200: V1GetParseStatusResponse;
 };
 
-export type KnowledgeBaseServiceListChunksResponse = KnowledgeBaseServiceListChunksResponses[keyof KnowledgeBaseServiceListChunksResponses];
+export type KnowledgeBaseServiceGetParseStatusResponse = KnowledgeBaseServiceGetParseStatusResponses[keyof KnowledgeBaseServiceGetParseStatusResponses];
 
 export type UserServiceGetAllUserData = {
     body?: never;

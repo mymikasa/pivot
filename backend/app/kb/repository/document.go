@@ -52,6 +52,10 @@ func (r *KbRepository) DeleteDocument(ctx context.Context, kbID, docID int64) er
 	return r.dao.DeleteDocument(ctx, kbID, docID)
 }
 
+func (r *KbRepository) DeleteParseTasks(ctx context.Context, kbID, docID int64) error {
+	return r.dao.DeleteParseTasks(ctx, kbID, docID)
+}
+
 func toDomainDocument(d dao.Document) domain.Document {
 	return domain.Document{
 		ID:            d.ID,

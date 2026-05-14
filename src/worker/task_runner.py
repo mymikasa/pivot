@@ -17,6 +17,7 @@ def run_one_task(
     db: Session,
     *,
     download_file: Callable[[str], bytes],
+    ingest_file: Callable[..., int] = ingest_bytes,
 ) -> bool:
     manager = TaskManager(db)
     task = manager.claim_next_pending_task()
@@ -28,12 +29,13 @@ def run_one_task(
         raw_binary = download_file(task.object_key)
 
         manager.update_progress(task.id, 30)
-        node_count = ingest_bytes(
+        node_count = ingest_file(
             raw_binary,
             content_type=task.content_type,
             kb_id=task.kb_id,
             document_id=task.document_id,
             object_key=task.object_key,
+            db=db,
         )
         logger.info("任务 %s 完成，写入 %d 个节点", task.id, node_count)
 

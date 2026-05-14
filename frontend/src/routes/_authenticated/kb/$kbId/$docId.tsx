@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 
 import { documentPreviewOptions } from "@/data/kb"
-import { chunkListOptions } from "@/data/chunk"
+import { chunkListOptions, useDeleteChunkMutation } from "@/data/chunk"
 
 export const Route = createFileRoute(
   "/_authenticated/kb/$kbId/$docId",
@@ -21,6 +21,7 @@ function DocumentDetailPage() {
     isLoading: chunksLoading,
     isError: chunksError,
   } = useQuery(chunkListOptions(kbId, docId))
+  const deleteChunkMutation = useDeleteChunkMutation(kbId, docId)
 
   if (isLoading) {
     return (
@@ -186,17 +187,69 @@ function DocumentDetailPage() {
               chunks.length > 0 &&
               chunks.map((chunk) => (
                 <div
-                  key={chunk.id}
-                  className="mb-3 rounded-lg border border-border-dim bg-white p-3"
+                  key={chunk.id ?? chunk.chunkIndex}
+                  className="group relative mb-3 rounded-lg border border-border-dim bg-white p-3"
                 >
                   <div className="mb-2 flex items-center justify-between">
                     <span className="rounded bg-surface-2 px-1.5 py-0.5 text-xs font-medium text-text-muted">
-                      #{chunk.chunk_index}
+                      #{chunk.chunkIndex}
                     </span>
-                    <span className="text-xs text-text-muted">
-                      {chunk.token_count} tokens
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-text-muted">
+                        {chunk.tokenCount} tokens
+                      </span>
+                      <button
+                        onClick={() => {
+                          if (chunk.chunkIndex == null) return
+                          deleteChunkMutation.mutate(chunk.chunkIndex)
+                        }}
+                        disabled={
+                          chunk.chunkIndex == null ||
+                          deleteChunkMutation.isPending
+                        }
+                        className="rounded p-0.5 text-text-muted opacity-0 transition-opacity hover:bg-danger-dim hover:text-danger group-hover:opacity-100 disabled:opacity-0"
+                        title="删除 chunk"
+                      >
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
+                  {(chunk.sourcePage ||
+                    chunk.sectionTitle ||
+                    chunk.sectionPath) && (
+                    <div className="mb-2 flex flex-wrap gap-1.5 text-[11px] text-text-muted">
+                      {chunk.sourcePage && (
+                        <span className="rounded bg-surface-1 px-1.5 py-0.5">
+                          p.{chunk.sourcePage}
+                        </span>
+                      )}
+                      {chunk.sectionTitle && (
+                        <span className="rounded bg-surface-1 px-1.5 py-0.5">
+                          {chunk.sectionTitle}
+                        </span>
+                      )}
+                      {chunk.sectionPath && (
+                        <span
+                          className="max-w-full truncate rounded bg-surface-1 px-1.5 py-0.5"
+                          title={chunk.sectionPath}
+                        >
+                          {chunk.sectionPath}
+                        </span>
+                      )}
+                    </div>
+                  )}
                   <p className="line-clamp-6 text-xs leading-relaxed text-text-secondary">
                     {chunk.content}
                   </p>

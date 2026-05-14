@@ -14,6 +14,8 @@ class ChunkStep(PipelineStep):
     async def execute(self, ctx: PipelineContext) -> PipelineContext:
         chunks: list[Chunk] = []
         step_size = self.chunk_token_num - self.overlap
+        ctx.metadata["chunk_size"] = self.chunk_token_num
+        ctx.metadata["chunk_overlap"] = self.overlap
 
         for section in ctx.sections:
             tokens = section.text.split()

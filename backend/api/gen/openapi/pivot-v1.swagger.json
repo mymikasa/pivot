@@ -362,6 +362,51 @@
         ]
       }
     },
+    "/api/v1/kb/{kbId}/documents/{docId}/chunks/{chunkIndex}/delete": {
+      "post": {
+        "operationId": "KnowledgeBaseService_DeleteChunk",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteChunkResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "kbId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "docId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "chunkIndex",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "KnowledgeBaseService"
+        ]
+      }
+    },
     "/api/v1/kb/{kbId}/documents/{docId}/delete": {
       "post": {
         "operationId": "KnowledgeBaseService_DeleteDocument",
@@ -800,6 +845,50 @@
         "tokenCount": {
           "type": "integer",
           "format": "int32"
+        },
+        "sourcePage": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sectionTitle": {
+          "type": "string"
+        },
+        "sectionPath": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "contentType": {
+          "type": "string"
+        },
+        "chunkSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "chunkOverlap": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "milvusId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -829,6 +918,9 @@
           "$ref": "#/definitions/v1KnowledgeBase"
         }
       }
+    },
+    "v1DeleteChunkResponse": {
+      "type": "object"
     },
     "v1DeleteDocumentResponse": {
       "type": "object"

@@ -92,3 +92,7 @@ func (r *KbRepository) FindChunksByDocument(ctx context.Context, kbID, docID int
 func (r *KbRepository) DeleteChunksByDocument(ctx context.Context, kbID, docID int64) error {
 	return r.chunks.DeleteChunksByDocument(ctx, kbID, docID)
 }
+
+func (r *KbRepository) DeleteChunk(ctx context.Context, kbID, docID int64, chunkIndex int32) error {
+	return r.chunks.DeleteChunk(ctx, kbID, docID, chunkIndex)
+}

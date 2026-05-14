@@ -34,6 +34,7 @@ const (
 	KnowledgeBaseService_ConfirmDocumentUpload_FullMethodName  = "/pivot.kb.v1.KnowledgeBaseService/ConfirmDocumentUpload"
 	KnowledgeBaseService_GetDocumentDownloadURL_FullMethodName = "/pivot.kb.v1.KnowledgeBaseService/GetDocumentDownloadURL"
 	KnowledgeBaseService_ListChunks_FullMethodName             = "/pivot.kb.v1.KnowledgeBaseService/ListChunks"
+	KnowledgeBaseService_DeleteChunk_FullMethodName            = "/pivot.kb.v1.KnowledgeBaseService/DeleteChunk"
 	KnowledgeBaseService_GetParseStatus_FullMethodName         = "/pivot.kb.v1.KnowledgeBaseService/GetParseStatus"
 )
 
@@ -63,6 +64,7 @@ type KnowledgeBaseServiceClient interface {
 	GetDocumentDownloadURL(ctx context.Context, in *GetDocumentDownloadURLRequest, opts ...grpc.CallOption) (*GetDocumentDownloadURLResponse, error)
 	// Chunk & parse status
 	ListChunks(ctx context.Context, in *ListChunksRequest, opts ...grpc.CallOption) (*ListChunksResponse, error)
+	DeleteChunk(ctx context.Context, in *DeleteChunkRequest, opts ...grpc.CallOption) (*DeleteChunkResponse, error)
 	GetParseStatus(ctx context.Context, in *GetParseStatusRequest, opts ...grpc.CallOption) (*GetParseStatusResponse, error)
 }
 
@@ -236,6 +238,16 @@ func (c *knowledgeBaseServiceClient) ListChunks(ctx context.Context, in *ListChu
 	return out, nil
 }
 
+func (c *knowledgeBaseServiceClient) DeleteChunk(ctx context.Context, in *DeleteChunkRequest, opts ...grpc.CallOption) (*DeleteChunkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteChunkResponse)
+	err := c.cc.Invoke(ctx, KnowledgeBaseService_DeleteChunk_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *knowledgeBaseServiceClient) GetParseStatus(ctx context.Context, in *GetParseStatusRequest, opts ...grpc.CallOption) (*GetParseStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetParseStatusResponse)
@@ -272,6 +284,7 @@ type KnowledgeBaseServiceServer interface {
 	GetDocumentDownloadURL(context.Context, *GetDocumentDownloadURLRequest) (*GetDocumentDownloadURLResponse, error)
 	// Chunk & parse status
 	ListChunks(context.Context, *ListChunksRequest) (*ListChunksResponse, error)
+	DeleteChunk(context.Context, *DeleteChunkRequest) (*DeleteChunkResponse, error)
 	GetParseStatus(context.Context, *GetParseStatusRequest) (*GetParseStatusResponse, error)
 	mustEmbedUnimplementedKnowledgeBaseServiceServer()
 }
@@ -327,6 +340,9 @@ func (UnimplementedKnowledgeBaseServiceServer) GetDocumentDownloadURL(context.Co
 }
 func (UnimplementedKnowledgeBaseServiceServer) ListChunks(context.Context, *ListChunksRequest) (*ListChunksResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListChunks not implemented")
+}
+func (UnimplementedKnowledgeBaseServiceServer) DeleteChunk(context.Context, *DeleteChunkRequest) (*DeleteChunkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteChunk not implemented")
 }
 func (UnimplementedKnowledgeBaseServiceServer) GetParseStatus(context.Context, *GetParseStatusRequest) (*GetParseStatusResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetParseStatus not implemented")
@@ -604,6 +620,24 @@ func _KnowledgeBaseService_ListChunks_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _KnowledgeBaseService_DeleteChunk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteChunkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KnowledgeBaseServiceServer).DeleteChunk(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KnowledgeBaseService_DeleteChunk_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KnowledgeBaseServiceServer).DeleteChunk(ctx, req.(*DeleteChunkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _KnowledgeBaseService_GetParseStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetParseStatusRequest)
 	if err := dec(in); err != nil {
@@ -680,6 +714,10 @@ var KnowledgeBaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListChunks",
 			Handler:    _KnowledgeBaseService_ListChunks_Handler,
+		},
+		{
+			MethodName: "DeleteChunk",
+			Handler:    _KnowledgeBaseService_DeleteChunk_Handler,
 		},
 		{
 			MethodName: "GetParseStatus",

@@ -48,22 +48,36 @@ def upgrade() -> None:
         sa.Column("document_id", sa.BigInteger(), nullable=False),
         sa.Column("chunk_index", sa.Integer(), nullable=False),
         sa.Column("content", sa.Text(), nullable=False),
-        sa.Column("token_count", sa.Integer(), nullable=False),
+        sa.Column("token_count", sa.Integer(), nullable=False, server_default="0"),
+        sa.Column("source_page", sa.Integer(), nullable=True),
+        sa.Column("section_title", sa.String(length=512), nullable=True),
+        sa.Column("section_path", sa.String(length=1024), nullable=True),
+        sa.Column("filename", sa.String(length=255), nullable=False),
+        sa.Column("content_type", sa.String(length=100), nullable=False),
+        sa.Column("chunk_size", sa.Integer(), nullable=False, server_default="512"),
+        sa.Column("chunk_overlap", sa.Integer(), nullable=False, server_default="50"),
+        sa.Column("version", sa.Integer(), nullable=False, server_default="1"),
+        sa.Column("user_id", sa.BigInteger(), nullable=True),
         sa.Column("milvus_id", sa.BigInteger(), nullable=True),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
         ),
+        sa.Column(
+            "updated_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index("ix_document_chunks_kb_id", "document_chunks", ["kb_id"])
     op.create_index(
-        "ix_document_chunks_document_id", "document_chunks", ["document_id"]
+        "ix_document_chunks_kb_id_document_id",
+        "document_chunks",
+        ["kb_id", "document_id"],
     )
+    op.create_index("ix_document_chunks_milvus_id", "document_chunks", ["milvus_id"])
 
 
 def downgrade() -> None:
-    op.drop_index("ix_document_chunks_document_id", table_name="document_chunks")
-    op.drop_index("ix_document_chunks_kb_id", table_name="document_chunks")
+    op.drop_index("ix_document_chunks_milvus_id", table_name="document_chunks")
+    op.drop_index("ix_document_chunks_kb_id_document_id", table_name="document_chunks")
     op.drop_table("document_chunks")
     op.drop_index("ix_parse_tasks_document_id", table_name="parse_tasks")
     op.drop_index("ix_parse_tasks_kb_id", table_name="parse_tasks")

@@ -4,6 +4,7 @@ from src.pipeline.context import Chunk, PipelineContext
 from src.pipeline.steps.embed_step import EmbedStep
 from src.pipeline.steps.parser_step import ParserStep
 from src.pipeline.steps.store_step import StoreStep
+from src.models.document_chunk import DocumentChunk
 
 
 def test_parser_step_parses_plain_text():
@@ -46,10 +47,38 @@ def test_store_step_persists_chunks(db):
         object_key="1/a.txt",
         content_type="text/plain",
         raw_binary=b"",
-        chunks=[Chunk(index=0, content="hello", token_count=1)],
+        chunks=[
+            Chunk(
+                index=0,
+                content="hello",
+                token_count=1,
+                metadata={
+                    "source_page": 2,
+                    "section_title": "标题",
+                    "section_path": "父级 > 标题",
+                },
+            )
+        ],
         embeddings=[[0.1, 0.2, 0.3, 0.4]],
+        metadata={
+            "filename": "a.txt",
+            "chunk_size": 512,
+            "chunk_overlap": 50,
+            "user_id": 7,
+            "milvus_ids": [1001],
+        },
     )
 
     result = anyio.run(StoreStep(db).execute, ctx)
 
     assert result.metadata["stored_chunks"] == 1
+    row = db.query(DocumentChunk).one()
+    assert row.source_page == 2
+    assert row.section_title == "标题"
+    assert row.section_path == "父级 > 标题"
+    assert row.filename == "a.txt"
+    assert row.content_type == "text/plain"
+    assert row.chunk_size == 512
+    assert row.chunk_overlap == 50
+    assert row.user_id == 7
+    assert row.milvus_id == 1001

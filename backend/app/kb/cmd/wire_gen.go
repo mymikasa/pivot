@@ -32,7 +32,7 @@ func initApp() (*ioc.App, func(), error) {
 		return nil, nil, err
 	}
 	string2 := ioc.InitMilvusCollectionName(config)
-	chunkRepository := repository.NewChunkRepository(client, string2)
+	chunkRepository := repository.NewChunkRepository(kbDAO, client, string2)
 	kbRepository := repository.NewKbRepository(kbDAO, chunkRepository)
 	minIO, err := ioc.InitMinIO(config)
 	if err != nil {

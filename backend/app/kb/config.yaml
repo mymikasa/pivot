@@ -20,4 +20,4 @@ minio:
   secret_key: "minioadmin"
 milvus:
   uri: "http://localhost:19530"
-  collection_name: "llamacollection"
+  collection_name: "pivot_chunks"

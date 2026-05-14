@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS document_chunks (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  kb_id BIGINT NOT NULL,
+  document_id BIGINT NOT NULL,
+  chunk_index INT NOT NULL,
+  content TEXT NOT NULL,
+  token_count INT NOT NULL DEFAULT 0,
+  source_page INT NULL,
+  section_title VARCHAR(512) NULL,
+  section_path VARCHAR(1024) NULL,
+  filename VARCHAR(255) NOT NULL,
+  content_type VARCHAR(100) NOT NULL,
+  chunk_size INT NOT NULL DEFAULT 512,
+  chunk_overlap INT NOT NULL DEFAULT 50,
+  version INT NOT NULL DEFAULT 1,
+  user_id BIGINT NULL,
+  milvus_id BIGINT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_document_chunks_kb_document (kb_id, document_id),
+  INDEX idx_document_chunks_milvus_id (milvus_id)
+);

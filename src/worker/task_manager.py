@@ -46,20 +46,30 @@ class TaskManager:
         return query.order_by(ParseTask.id.desc()).all()
 
     def claim_next_pending_task(self) -> ParseTask | None:
-        row = self.db.execute(
-            text(
-                "SELECT id FROM parse_tasks"
-                " WHERE status = :status"
-                " ORDER BY id ASC"
-                " LIMIT 1"
-                " FOR UPDATE SKIP LOCKED"
-            ),
-            {"status": ParseTaskStatus.PENDING.value},
-        ).first()
-        if row is None:
-            return None
+        if self.db.get_bind().dialect.name == "sqlite":
+            task = (
+                self.db.query(ParseTask)
+                .filter(ParseTask.status == ParseTaskStatus.PENDING.value)
+                .order_by(ParseTask.id.asc())
+                .first()
+            )
+            if task is None:
+                return None
+        else:
+            row = self.db.execute(
+                text(
+                    "SELECT id FROM parse_tasks"
+                    " WHERE status = :status"
+                    " ORDER BY id ASC"
+                    " LIMIT 1"
+                    " FOR UPDATE SKIP LOCKED"
+                ),
+                {"status": ParseTaskStatus.PENDING.value},
+            ).first()
+            if row is None:
+                return None
+            task = self.db.get(ParseTask, row[0])
 
-        task = self.db.get(ParseTask, row[0])
         task.status = ParseTaskStatus.RUNNING.value
         task.progress = 0
         self.db.commit()
