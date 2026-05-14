@@ -437,6 +437,44 @@
         ]
       }
     },
+    "/api/v1/kb/{kbId}/documents/{docId}/chunks": {
+      "get": {
+        "operationId": "KnowledgeBaseService_ListChunks",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListChunksResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "kbId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "docId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "KnowledgeBaseService"
+        ]
+      }
+    },
     "/api/v1/users": {
       "get": {
         "operationId": "UserService_GetAllUser",
@@ -698,6 +736,34 @@
         }
       }
     },
+    "v1Chunk": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "kbId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "documentId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "chunkIndex": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "content": {
+          "type": "string"
+        },
+        "tokenCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "v1ConfirmDocumentUploadResponse": {
       "type": "object",
       "properties": {
@@ -857,6 +923,18 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1Document"
+          }
+        }
+      }
+    },
+    "v1ListChunksResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Chunk"
           }
         }
       }

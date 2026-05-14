@@ -323,6 +323,45 @@
         ]
       }
     },
+    "/api/v1/kb/{kbId}/documents/{docId}/chunks": {
+      "get": {
+        "summary": "Chunk \u0026 parse status",
+        "operationId": "KnowledgeBaseService_ListChunks",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListChunksResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "kbId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "docId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "KnowledgeBaseService"
+        ]
+      }
+    },
     "/api/v1/kb/{kbId}/documents/{docId}/delete": {
       "post": {
         "operationId": "KnowledgeBaseService_DeleteDocument",
@@ -407,6 +446,44 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/v1GetDocumentDownloadURLResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "kbId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "docId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "KnowledgeBaseService"
+        ]
+      }
+    },
+    "/api/v1/kb/{kbId}/documents/{docId}/parse-status": {
+      "get": {
+        "operationId": "KnowledgeBaseService_GetParseStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetParseStatusResponse"
             }
           },
           "default": {
@@ -698,6 +775,34 @@
         }
       }
     },
+    "v1Chunk": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "kbId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "documentId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "chunkIndex": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "content": {
+          "type": "string"
+        },
+        "tokenCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "v1ConfirmDocumentUploadResponse": {
       "type": "object",
       "properties": {
@@ -839,6 +944,25 @@
         }
       }
     },
+    "v1GetParseStatusResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "progress": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "error": {
+          "type": "string"
+        },
+        "parsedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "v1KnowledgeBase": {
       "type": "object",
       "properties": {
@@ -867,6 +991,18 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1ListChunksResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Chunk"
+          }
         }
       }
     },

@@ -39,6 +39,15 @@ export type RpcStatus = {
     details?: Array<ProtobufAny>;
 };
 
+export type V1Chunk = {
+    id?: string;
+    kbId?: string;
+    documentId?: string;
+    chunkIndex?: number;
+    content?: string;
+    tokenCount?: number;
+};
+
 export type V1ConfirmDocumentUploadResponse = {
     document?: V1Document;
 };
@@ -106,6 +115,10 @@ export type V1KnowledgeBase = {
 
 export type V1ListDocumentsResponse = {
     items?: Array<V1Document>;
+};
+
+export type V1ListChunksResponse = {
+    items?: Array<V1Chunk>;
 };
 
 export type V1ListKnowledgeBasesResponse = {
@@ -494,6 +507,34 @@ export type KnowledgeBaseServiceGetDocumentDownloadUrlResponses = {
 };
 
 export type KnowledgeBaseServiceGetDocumentDownloadUrlResponse = KnowledgeBaseServiceGetDocumentDownloadUrlResponses[keyof KnowledgeBaseServiceGetDocumentDownloadUrlResponses];
+
+export type KnowledgeBaseServiceListChunksData = {
+    body?: never;
+    path: {
+        kbId: string;
+        docId: string;
+    };
+    query?: never;
+    url: '/api/v1/kb/{kbId}/documents/{docId}/chunks';
+};
+
+export type KnowledgeBaseServiceListChunksErrors = {
+    /**
+     * An unexpected error response.
+     */
+    default: RpcStatus;
+};
+
+export type KnowledgeBaseServiceListChunksError = KnowledgeBaseServiceListChunksErrors[keyof KnowledgeBaseServiceListChunksErrors];
+
+export type KnowledgeBaseServiceListChunksResponses = {
+    /**
+     * A successful response.
+     */
+    200: V1ListChunksResponse;
+};
+
+export type KnowledgeBaseServiceListChunksResponse = KnowledgeBaseServiceListChunksResponses[keyof KnowledgeBaseServiceListChunksResponses];
 
 export type UserServiceGetAllUserData = {
     body?: never;

@@ -26,24 +26,34 @@ func initApp() (*ioc.App, func(), error) {
 		return nil, nil, err
 	}
 	kbDAO := dao.NewKbDAO(db)
-	kbRepository := repository.NewKbRepository(kbDAO)
+	client, cleanup2, err := ioc.InitMilvus(config)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	string2 := ioc.InitMilvusCollectionName(config)
+	chunkRepository := repository.NewChunkRepository(client, string2)
+	kbRepository := repository.NewKbRepository(kbDAO, chunkRepository)
 	minIO, err := ioc.InitMinIO(config)
 	if err != nil {
+		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	logger := ioc.InitLogger(config)
 	kbService := service.NewKbService(kbRepository, minIO, logger)
-	kbServer := grpc.NewKbServer(kbService)
+	kbServer := grpc.NewKbServer(kbService, logger)
 	verifier := ioc.InitJWTVerifier(config)
 	server := ioc.InitGRPCServer(kbServer, verifier)
 	httpServer, err := ioc.InitHTTPGateway(config)
 	if err != nil {
+		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	app := ioc.NewApp(server, httpServer, logger, config)
 	return app, func() {
+		cleanup2()
 		cleanup()
 	}, nil
 }

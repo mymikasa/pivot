@@ -3,6 +3,7 @@ package grpc
 import (
 	"errors"
 	"io"
+	"log/slog"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -10,7 +11,7 @@ import (
 	"github.com/mymikasa/pivot/app/kb/domain"
 )
 
-func toGRPCError(err error) error {
+func toGRPCError(err error, logger ...*slog.Logger) error {
 	if err == nil {
 		return nil
 	}
@@ -34,6 +35,9 @@ func toGRPCError(err error) error {
 	case errors.Is(err, io.EOF):
 		return nil
 	default:
+		if len(logger) > 0 && logger[0] != nil {
+			logger[0].Error("unhandled error", slog.String("err", err.Error()))
+		}
 		return status.Error(codes.Internal, "internal error")
 	}
 }

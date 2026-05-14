@@ -22,4 +22,8 @@ type Repository interface {
 	UpdateDocumentStatus(ctx context.Context, id int64, status string) error
 	UpdateDocumentParseState(ctx context.Context, docID int64, status string, taskID *int64, progress int32, parseErr string) error
 	DeleteDocument(ctx context.Context, kbID, docID int64) error
+
+	// Chunk
+	FindChunksByDocument(ctx context.Context, kbID, docID int64) ([]domain.Chunk, error)
+	DeleteChunksByDocument(ctx context.Context, kbID, docID int64) error
 }

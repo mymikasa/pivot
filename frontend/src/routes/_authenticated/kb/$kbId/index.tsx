@@ -328,7 +328,8 @@ function DocumentRow({
   const createdAt = getCreatedAt(doc)
   const status = getDocumentStatus(doc)
   const isParsing = parseStatus === "pending" || parseStatus === "running"
-  const canParse = status === "ready" && objectKey.length > 0 && !isParsing
+  const isParsed = parseStatus === "completed"
+  const canParse = status === "ready" && objectKey.length > 0 && !isParsing && !isParsed
 
   function handleParse() {
     createParseTaskMutation.mutate({

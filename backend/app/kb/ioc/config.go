@@ -12,12 +12,13 @@ import (
 )
 
 type Config struct {
-	GRPC  GRPCConfig       `mapstructure:"grpc"`
-	HTTP  HTTPConfig       `mapstructure:"http"`
-	DB    DBConfig         `mapstructure:"db"`
-	Log   LogConfig        `mapstructure:"log"`
-	JWT   jwtpkg.Config    `mapstructure:"jwt"`
-	MinIO storage.Config   `mapstructure:"minio"`
+	GRPC   GRPCConfig       `mapstructure:"grpc"`
+	HTTP   HTTPConfig       `mapstructure:"http"`
+	DB     DBConfig         `mapstructure:"db"`
+	Log    LogConfig        `mapstructure:"log"`
+	JWT    jwtpkg.Config    `mapstructure:"jwt"`
+	MinIO  storage.Config   `mapstructure:"minio"`
+	Milvus MilvusConfig     `mapstructure:"milvus"`
 }
 
 type GRPCConfig struct {
@@ -34,6 +35,11 @@ type DBConfig struct {
 
 type LogConfig struct {
 	Level string `mapstructure:"level"`
+}
+
+type MilvusConfig struct {
+	URI           string `mapstructure:"uri"`
+	CollectionName string `mapstructure:"collection_name"`
 }
 
 func InitConfig() (*Config, error) {

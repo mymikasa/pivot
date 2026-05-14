@@ -8,11 +8,12 @@ import (
 )
 
 type KbRepository struct {
-	dao dao.DAO
+	dao     dao.DAO
+	chunks  *ChunkRepository
 }
 
-func NewKbRepository(d dao.DAO) *KbRepository {
-	return &KbRepository{dao: d}
+func NewKbRepository(d dao.DAO, chunks *ChunkRepository) *KbRepository {
+	return &KbRepository{dao: d, chunks: chunks}
 }
 
 // --- KnowledgeBase ---
@@ -80,4 +81,14 @@ func toDomainKB(kb dao.KnowledgeBase) domain.KnowledgeBase {
 		CreatedAt:   kb.CreatedAt,
 		UpdatedAt:   kb.UpdatedAt,
 	}
+}
+
+// --- Chunk ---
+
+func (r *KbRepository) FindChunksByDocument(ctx context.Context, kbID, docID int64) ([]domain.Chunk, error) {
+	return r.chunks.FindChunksByDocument(ctx, kbID, docID)
+}
+
+func (r *KbRepository) DeleteChunksByDocument(ctx context.Context, kbID, docID int64) error {
+	return r.chunks.DeleteChunksByDocument(ctx, kbID, docID)
 }

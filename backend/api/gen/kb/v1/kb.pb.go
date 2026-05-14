@@ -1583,6 +1583,306 @@ func (x *GetDocumentDownloadURLResponse) GetContentType() string {
 	return ""
 }
 
+type Chunk struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	KbId          int64                  `protobuf:"varint,2,opt,name=kb_id,json=kbId,proto3" json:"kb_id,omitempty"`
+	DocumentId    int64                  `protobuf:"varint,3,opt,name=document_id,json=documentId,proto3" json:"document_id,omitempty"`
+	ChunkIndex    int32                  `protobuf:"varint,4,opt,name=chunk_index,json=chunkIndex,proto3" json:"chunk_index,omitempty"`
+	Content       string                 `protobuf:"bytes,5,opt,name=content,proto3" json:"content,omitempty"`
+	TokenCount    int32                  `protobuf:"varint,6,opt,name=token_count,json=tokenCount,proto3" json:"token_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Chunk) Reset() {
+	*x = Chunk{}
+	mi := &file_kb_v1_kb_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Chunk) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Chunk) ProtoMessage() {}
+
+func (x *Chunk) ProtoReflect() protoreflect.Message {
+	mi := &file_kb_v1_kb_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Chunk.ProtoReflect.Descriptor instead.
+func (*Chunk) Descriptor() ([]byte, []int) {
+	return file_kb_v1_kb_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *Chunk) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Chunk) GetKbId() int64 {
+	if x != nil {
+		return x.KbId
+	}
+	return 0
+}
+
+func (x *Chunk) GetDocumentId() int64 {
+	if x != nil {
+		return x.DocumentId
+	}
+	return 0
+}
+
+func (x *Chunk) GetChunkIndex() int32 {
+	if x != nil {
+		return x.ChunkIndex
+	}
+	return 0
+}
+
+func (x *Chunk) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *Chunk) GetTokenCount() int32 {
+	if x != nil {
+		return x.TokenCount
+	}
+	return 0
+}
+
+type ListChunksRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	KbId          int64                  `protobuf:"varint,1,opt,name=kb_id,json=kbId,proto3" json:"kb_id,omitempty"`
+	DocId         int64                  `protobuf:"varint,2,opt,name=doc_id,json=docId,proto3" json:"doc_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListChunksRequest) Reset() {
+	*x = ListChunksRequest{}
+	mi := &file_kb_v1_kb_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListChunksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListChunksRequest) ProtoMessage() {}
+
+func (x *ListChunksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_kb_v1_kb_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListChunksRequest.ProtoReflect.Descriptor instead.
+func (*ListChunksRequest) Descriptor() ([]byte, []int) {
+	return file_kb_v1_kb_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *ListChunksRequest) GetKbId() int64 {
+	if x != nil {
+		return x.KbId
+	}
+	return 0
+}
+
+func (x *ListChunksRequest) GetDocId() int64 {
+	if x != nil {
+		return x.DocId
+	}
+	return 0
+}
+
+type ListChunksResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*Chunk               `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListChunksResponse) Reset() {
+	*x = ListChunksResponse{}
+	mi := &file_kb_v1_kb_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListChunksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListChunksResponse) ProtoMessage() {}
+
+func (x *ListChunksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_kb_v1_kb_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListChunksResponse.ProtoReflect.Descriptor instead.
+func (*ListChunksResponse) Descriptor() ([]byte, []int) {
+	return file_kb_v1_kb_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *ListChunksResponse) GetItems() []*Chunk {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+type GetParseStatusRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	KbId          int64                  `protobuf:"varint,1,opt,name=kb_id,json=kbId,proto3" json:"kb_id,omitempty"`
+	DocId         int64                  `protobuf:"varint,2,opt,name=doc_id,json=docId,proto3" json:"doc_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetParseStatusRequest) Reset() {
+	*x = GetParseStatusRequest{}
+	mi := &file_kb_v1_kb_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetParseStatusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetParseStatusRequest) ProtoMessage() {}
+
+func (x *GetParseStatusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_kb_v1_kb_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetParseStatusRequest.ProtoReflect.Descriptor instead.
+func (*GetParseStatusRequest) Descriptor() ([]byte, []int) {
+	return file_kb_v1_kb_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *GetParseStatusRequest) GetKbId() int64 {
+	if x != nil {
+		return x.KbId
+	}
+	return 0
+}
+
+func (x *GetParseStatusRequest) GetDocId() int64 {
+	if x != nil {
+		return x.DocId
+	}
+	return 0
+}
+
+type GetParseStatusResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Progress      int32                  `protobuf:"varint,2,opt,name=progress,proto3" json:"progress,omitempty"`
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	ParsedAt      *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=parsed_at,json=parsedAt,proto3" json:"parsed_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetParseStatusResponse) Reset() {
+	*x = GetParseStatusResponse{}
+	mi := &file_kb_v1_kb_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetParseStatusResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetParseStatusResponse) ProtoMessage() {}
+
+func (x *GetParseStatusResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_kb_v1_kb_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetParseStatusResponse.ProtoReflect.Descriptor instead.
+func (*GetParseStatusResponse) Descriptor() ([]byte, []int) {
+	return file_kb_v1_kb_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *GetParseStatusResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *GetParseStatusResponse) GetProgress() int32 {
+	if x != nil {
+		return x.Progress
+	}
+	return 0
+}
+
+func (x *GetParseStatusResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *GetParseStatusResponse) GetParsedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ParsedAt
+	}
+	return nil
+}
+
 var File_kb_v1_kb_proto protoreflect.FileDescriptor
 
 const file_kb_v1_kb_proto_rawDesc = "" +
@@ -1693,7 +1993,30 @@ const file_kb_v1_kb_proto_rawDesc = "" +
 	"\x1eGetDocumentDownloadURLResponse\x12!\n" +
 	"\fdownload_url\x18\x01 \x01(\tR\vdownloadUrl\x12\x1a\n" +
 	"\bfilename\x18\x02 \x01(\tR\bfilename\x12!\n" +
-	"\fcontent_type\x18\x03 \x01(\tR\vcontentType2\xb5\x0f\n" +
+	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\"\xa9\x01\n" +
+	"\x05Chunk\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x13\n" +
+	"\x05kb_id\x18\x02 \x01(\x03R\x04kbId\x12\x1f\n" +
+	"\vdocument_id\x18\x03 \x01(\x03R\n" +
+	"documentId\x12\x1f\n" +
+	"\vchunk_index\x18\x04 \x01(\x05R\n" +
+	"chunkIndex\x12\x18\n" +
+	"\acontent\x18\x05 \x01(\tR\acontent\x12\x1f\n" +
+	"\vtoken_count\x18\x06 \x01(\x05R\n" +
+	"tokenCount\"?\n" +
+	"\x11ListChunksRequest\x12\x13\n" +
+	"\x05kb_id\x18\x01 \x01(\x03R\x04kbId\x12\x15\n" +
+	"\x06doc_id\x18\x02 \x01(\x03R\x05docId\">\n" +
+	"\x12ListChunksResponse\x12(\n" +
+	"\x05items\x18\x01 \x03(\v2\x12.pivot.kb.v1.ChunkR\x05items\"C\n" +
+	"\x15GetParseStatusRequest\x12\x13\n" +
+	"\x05kb_id\x18\x01 \x01(\x03R\x04kbId\x12\x15\n" +
+	"\x06doc_id\x18\x02 \x01(\x03R\x05docId\"\x9b\x01\n" +
+	"\x16GetParseStatusResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\x12\x1a\n" +
+	"\bprogress\x18\x02 \x01(\x05R\bprogress\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\x127\n" +
+	"\tparsed_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bparsedAt2\xd3\x11\n" +
 	"\x14KnowledgeBaseService\x12\x7f\n" +
 	"\x13CreateKnowledgeBase\x12'.pivot.kb.v1.CreateKnowledgeBaseRequest\x1a(.pivot.kb.v1.CreateKnowledgeBaseResponse\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
 	"/api/v1/kb\x12y\n" +
@@ -1710,7 +2033,10 @@ const file_kb_v1_kb_proto_rawDesc = "" +
 	"\x0eDeleteDocument\x12\".pivot.kb.v1.DeleteDocumentRequest\x1a#.pivot.kb.v1.DeleteDocumentResponse\"4\x82\xd3\xe4\x93\x02.\",/api/v1/kb/{kb_id}/documents/{doc_id}/delete\x12\xa6\x01\n" +
 	"\x15PrepareDocumentUpload\x12).pivot.kb.v1.PrepareDocumentUploadRequest\x1a*.pivot.kb.v1.PrepareDocumentUploadResponse\"6\x82\xd3\xe4\x93\x020:\x01*\"+/api/v1/kb/{kb_id}/documents/prepare-upload\x12\xa6\x01\n" +
 	"\x15ConfirmDocumentUpload\x12).pivot.kb.v1.ConfirmDocumentUploadRequest\x1a*.pivot.kb.v1.ConfirmDocumentUploadResponse\"6\x82\xd3\xe4\x93\x020:\x01*\"+/api/v1/kb/{kb_id}/documents/confirm-upload\x12\xad\x01\n" +
-	"\x16GetDocumentDownloadURL\x12*.pivot.kb.v1.GetDocumentDownloadURLRequest\x1a+.pivot.kb.v1.GetDocumentDownloadURLResponse\":\x82\xd3\xe4\x93\x024\x122/api/v1/kb/{kb_id}/documents/{doc_id}/download-urlB.Z,github.com/mymikasa/pivot/api/gen/kb/v1;kbv1b\x06proto3"
+	"\x16GetDocumentDownloadURL\x12*.pivot.kb.v1.GetDocumentDownloadURLRequest\x1a+.pivot.kb.v1.GetDocumentDownloadURLResponse\":\x82\xd3\xe4\x93\x024\x122/api/v1/kb/{kb_id}/documents/{doc_id}/download-url\x12\x83\x01\n" +
+	"\n" +
+	"ListChunks\x12\x1e.pivot.kb.v1.ListChunksRequest\x1a\x1f.pivot.kb.v1.ListChunksResponse\"4\x82\xd3\xe4\x93\x02.\x12,/api/v1/kb/{kb_id}/documents/{doc_id}/chunks\x12\x95\x01\n" +
+	"\x0eGetParseStatus\x12\".pivot.kb.v1.GetParseStatusRequest\x1a#.pivot.kb.v1.GetParseStatusResponse\":\x82\xd3\xe4\x93\x024\x122/api/v1/kb/{kb_id}/documents/{doc_id}/parse-statusB.Z,github.com/mymikasa/pivot/api/gen/kb/v1;kbv1b\x06proto3"
 
 var (
 	file_kb_v1_kb_proto_rawDescOnce sync.Once
@@ -1724,7 +2050,7 @@ func file_kb_v1_kb_proto_rawDescGZIP() []byte {
 	return file_kb_v1_kb_proto_rawDescData
 }
 
-var file_kb_v1_kb_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
+var file_kb_v1_kb_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_kb_v1_kb_proto_goTypes = []any{
 	(*KnowledgeBase)(nil),                  // 0: pivot.kb.v1.KnowledgeBase
 	(*CreateKnowledgeBaseRequest)(nil),     // 1: pivot.kb.v1.CreateKnowledgeBaseRequest
@@ -1754,53 +2080,64 @@ var file_kb_v1_kb_proto_goTypes = []any{
 	(*ConfirmDocumentUploadResponse)(nil),  // 25: pivot.kb.v1.ConfirmDocumentUploadResponse
 	(*GetDocumentDownloadURLRequest)(nil),  // 26: pivot.kb.v1.GetDocumentDownloadURLRequest
 	(*GetDocumentDownloadURLResponse)(nil), // 27: pivot.kb.v1.GetDocumentDownloadURLResponse
-	(*timestamppb.Timestamp)(nil),          // 28: google.protobuf.Timestamp
+	(*Chunk)(nil),                          // 28: pivot.kb.v1.Chunk
+	(*ListChunksRequest)(nil),              // 29: pivot.kb.v1.ListChunksRequest
+	(*ListChunksResponse)(nil),             // 30: pivot.kb.v1.ListChunksResponse
+	(*GetParseStatusRequest)(nil),          // 31: pivot.kb.v1.GetParseStatusRequest
+	(*GetParseStatusResponse)(nil),         // 32: pivot.kb.v1.GetParseStatusResponse
+	(*timestamppb.Timestamp)(nil),          // 33: google.protobuf.Timestamp
 }
 var file_kb_v1_kb_proto_depIdxs = []int32{
-	28, // 0: pivot.kb.v1.KnowledgeBase.created_at:type_name -> google.protobuf.Timestamp
-	28, // 1: pivot.kb.v1.KnowledgeBase.updated_at:type_name -> google.protobuf.Timestamp
+	33, // 0: pivot.kb.v1.KnowledgeBase.created_at:type_name -> google.protobuf.Timestamp
+	33, // 1: pivot.kb.v1.KnowledgeBase.updated_at:type_name -> google.protobuf.Timestamp
 	0,  // 2: pivot.kb.v1.CreateKnowledgeBaseResponse.kb:type_name -> pivot.kb.v1.KnowledgeBase
 	0,  // 3: pivot.kb.v1.ListKnowledgeBasesResponse.items:type_name -> pivot.kb.v1.KnowledgeBase
 	0,  // 4: pivot.kb.v1.GetKnowledgeBaseResponse.kb:type_name -> pivot.kb.v1.KnowledgeBase
 	0,  // 5: pivot.kb.v1.UpdateKnowledgeBaseResponse.kb:type_name -> pivot.kb.v1.KnowledgeBase
-	28, // 6: pivot.kb.v1.Document.created_at:type_name -> google.protobuf.Timestamp
-	28, // 7: pivot.kb.v1.Document.parsed_at:type_name -> google.protobuf.Timestamp
+	33, // 6: pivot.kb.v1.Document.created_at:type_name -> google.protobuf.Timestamp
+	33, // 7: pivot.kb.v1.Document.parsed_at:type_name -> google.protobuf.Timestamp
 	11, // 8: pivot.kb.v1.UploadDocumentResponse.document:type_name -> pivot.kb.v1.Document
 	11, // 9: pivot.kb.v1.ListDocumentsResponse.items:type_name -> pivot.kb.v1.Document
 	11, // 10: pivot.kb.v1.ConfirmDocumentUploadResponse.document:type_name -> pivot.kb.v1.Document
-	1,  // 11: pivot.kb.v1.KnowledgeBaseService.CreateKnowledgeBase:input_type -> pivot.kb.v1.CreateKnowledgeBaseRequest
-	3,  // 12: pivot.kb.v1.KnowledgeBaseService.ListKnowledgeBases:input_type -> pivot.kb.v1.ListKnowledgeBasesRequest
-	5,  // 13: pivot.kb.v1.KnowledgeBaseService.GetKnowledgeBase:input_type -> pivot.kb.v1.GetKnowledgeBaseRequest
-	7,  // 14: pivot.kb.v1.KnowledgeBaseService.UpdateKnowledgeBase:input_type -> pivot.kb.v1.UpdateKnowledgeBaseRequest
-	9,  // 15: pivot.kb.v1.KnowledgeBaseService.DeleteKnowledgeBase:input_type -> pivot.kb.v1.DeleteKnowledgeBaseRequest
-	12, // 16: pivot.kb.v1.KnowledgeBaseService.UploadDocument:input_type -> pivot.kb.v1.UploadDocumentRequest
-	18, // 17: pivot.kb.v1.KnowledgeBaseService.DownloadDocument:input_type -> pivot.kb.v1.DownloadDocumentRequest
-	20, // 18: pivot.kb.v1.KnowledgeBaseService.UploadDocumentSimple:input_type -> pivot.kb.v1.UploadDocumentSimpleRequest
-	18, // 19: pivot.kb.v1.KnowledgeBaseService.DownloadDocumentSimple:input_type -> pivot.kb.v1.DownloadDocumentRequest
-	14, // 20: pivot.kb.v1.KnowledgeBaseService.ListDocuments:input_type -> pivot.kb.v1.ListDocumentsRequest
-	16, // 21: pivot.kb.v1.KnowledgeBaseService.DeleteDocument:input_type -> pivot.kb.v1.DeleteDocumentRequest
-	22, // 22: pivot.kb.v1.KnowledgeBaseService.PrepareDocumentUpload:input_type -> pivot.kb.v1.PrepareDocumentUploadRequest
-	24, // 23: pivot.kb.v1.KnowledgeBaseService.ConfirmDocumentUpload:input_type -> pivot.kb.v1.ConfirmDocumentUploadRequest
-	26, // 24: pivot.kb.v1.KnowledgeBaseService.GetDocumentDownloadURL:input_type -> pivot.kb.v1.GetDocumentDownloadURLRequest
-	2,  // 25: pivot.kb.v1.KnowledgeBaseService.CreateKnowledgeBase:output_type -> pivot.kb.v1.CreateKnowledgeBaseResponse
-	4,  // 26: pivot.kb.v1.KnowledgeBaseService.ListKnowledgeBases:output_type -> pivot.kb.v1.ListKnowledgeBasesResponse
-	6,  // 27: pivot.kb.v1.KnowledgeBaseService.GetKnowledgeBase:output_type -> pivot.kb.v1.GetKnowledgeBaseResponse
-	8,  // 28: pivot.kb.v1.KnowledgeBaseService.UpdateKnowledgeBase:output_type -> pivot.kb.v1.UpdateKnowledgeBaseResponse
-	10, // 29: pivot.kb.v1.KnowledgeBaseService.DeleteKnowledgeBase:output_type -> pivot.kb.v1.DeleteKnowledgeBaseResponse
-	13, // 30: pivot.kb.v1.KnowledgeBaseService.UploadDocument:output_type -> pivot.kb.v1.UploadDocumentResponse
-	19, // 31: pivot.kb.v1.KnowledgeBaseService.DownloadDocument:output_type -> pivot.kb.v1.DownloadDocumentResponse
-	13, // 32: pivot.kb.v1.KnowledgeBaseService.UploadDocumentSimple:output_type -> pivot.kb.v1.UploadDocumentResponse
-	21, // 33: pivot.kb.v1.KnowledgeBaseService.DownloadDocumentSimple:output_type -> pivot.kb.v1.DownloadDocumentSimpleResponse
-	15, // 34: pivot.kb.v1.KnowledgeBaseService.ListDocuments:output_type -> pivot.kb.v1.ListDocumentsResponse
-	17, // 35: pivot.kb.v1.KnowledgeBaseService.DeleteDocument:output_type -> pivot.kb.v1.DeleteDocumentResponse
-	23, // 36: pivot.kb.v1.KnowledgeBaseService.PrepareDocumentUpload:output_type -> pivot.kb.v1.PrepareDocumentUploadResponse
-	25, // 37: pivot.kb.v1.KnowledgeBaseService.ConfirmDocumentUpload:output_type -> pivot.kb.v1.ConfirmDocumentUploadResponse
-	27, // 38: pivot.kb.v1.KnowledgeBaseService.GetDocumentDownloadURL:output_type -> pivot.kb.v1.GetDocumentDownloadURLResponse
-	25, // [25:39] is the sub-list for method output_type
-	11, // [11:25] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	28, // 11: pivot.kb.v1.ListChunksResponse.items:type_name -> pivot.kb.v1.Chunk
+	33, // 12: pivot.kb.v1.GetParseStatusResponse.parsed_at:type_name -> google.protobuf.Timestamp
+	1,  // 13: pivot.kb.v1.KnowledgeBaseService.CreateKnowledgeBase:input_type -> pivot.kb.v1.CreateKnowledgeBaseRequest
+	3,  // 14: pivot.kb.v1.KnowledgeBaseService.ListKnowledgeBases:input_type -> pivot.kb.v1.ListKnowledgeBasesRequest
+	5,  // 15: pivot.kb.v1.KnowledgeBaseService.GetKnowledgeBase:input_type -> pivot.kb.v1.GetKnowledgeBaseRequest
+	7,  // 16: pivot.kb.v1.KnowledgeBaseService.UpdateKnowledgeBase:input_type -> pivot.kb.v1.UpdateKnowledgeBaseRequest
+	9,  // 17: pivot.kb.v1.KnowledgeBaseService.DeleteKnowledgeBase:input_type -> pivot.kb.v1.DeleteKnowledgeBaseRequest
+	12, // 18: pivot.kb.v1.KnowledgeBaseService.UploadDocument:input_type -> pivot.kb.v1.UploadDocumentRequest
+	18, // 19: pivot.kb.v1.KnowledgeBaseService.DownloadDocument:input_type -> pivot.kb.v1.DownloadDocumentRequest
+	20, // 20: pivot.kb.v1.KnowledgeBaseService.UploadDocumentSimple:input_type -> pivot.kb.v1.UploadDocumentSimpleRequest
+	18, // 21: pivot.kb.v1.KnowledgeBaseService.DownloadDocumentSimple:input_type -> pivot.kb.v1.DownloadDocumentRequest
+	14, // 22: pivot.kb.v1.KnowledgeBaseService.ListDocuments:input_type -> pivot.kb.v1.ListDocumentsRequest
+	16, // 23: pivot.kb.v1.KnowledgeBaseService.DeleteDocument:input_type -> pivot.kb.v1.DeleteDocumentRequest
+	22, // 24: pivot.kb.v1.KnowledgeBaseService.PrepareDocumentUpload:input_type -> pivot.kb.v1.PrepareDocumentUploadRequest
+	24, // 25: pivot.kb.v1.KnowledgeBaseService.ConfirmDocumentUpload:input_type -> pivot.kb.v1.ConfirmDocumentUploadRequest
+	26, // 26: pivot.kb.v1.KnowledgeBaseService.GetDocumentDownloadURL:input_type -> pivot.kb.v1.GetDocumentDownloadURLRequest
+	29, // 27: pivot.kb.v1.KnowledgeBaseService.ListChunks:input_type -> pivot.kb.v1.ListChunksRequest
+	31, // 28: pivot.kb.v1.KnowledgeBaseService.GetParseStatus:input_type -> pivot.kb.v1.GetParseStatusRequest
+	2,  // 29: pivot.kb.v1.KnowledgeBaseService.CreateKnowledgeBase:output_type -> pivot.kb.v1.CreateKnowledgeBaseResponse
+	4,  // 30: pivot.kb.v1.KnowledgeBaseService.ListKnowledgeBases:output_type -> pivot.kb.v1.ListKnowledgeBasesResponse
+	6,  // 31: pivot.kb.v1.KnowledgeBaseService.GetKnowledgeBase:output_type -> pivot.kb.v1.GetKnowledgeBaseResponse
+	8,  // 32: pivot.kb.v1.KnowledgeBaseService.UpdateKnowledgeBase:output_type -> pivot.kb.v1.UpdateKnowledgeBaseResponse
+	10, // 33: pivot.kb.v1.KnowledgeBaseService.DeleteKnowledgeBase:output_type -> pivot.kb.v1.DeleteKnowledgeBaseResponse
+	13, // 34: pivot.kb.v1.KnowledgeBaseService.UploadDocument:output_type -> pivot.kb.v1.UploadDocumentResponse
+	19, // 35: pivot.kb.v1.KnowledgeBaseService.DownloadDocument:output_type -> pivot.kb.v1.DownloadDocumentResponse
+	13, // 36: pivot.kb.v1.KnowledgeBaseService.UploadDocumentSimple:output_type -> pivot.kb.v1.UploadDocumentResponse
+	21, // 37: pivot.kb.v1.KnowledgeBaseService.DownloadDocumentSimple:output_type -> pivot.kb.v1.DownloadDocumentSimpleResponse
+	15, // 38: pivot.kb.v1.KnowledgeBaseService.ListDocuments:output_type -> pivot.kb.v1.ListDocumentsResponse
+	17, // 39: pivot.kb.v1.KnowledgeBaseService.DeleteDocument:output_type -> pivot.kb.v1.DeleteDocumentResponse
+	23, // 40: pivot.kb.v1.KnowledgeBaseService.PrepareDocumentUpload:output_type -> pivot.kb.v1.PrepareDocumentUploadResponse
+	25, // 41: pivot.kb.v1.KnowledgeBaseService.ConfirmDocumentUpload:output_type -> pivot.kb.v1.ConfirmDocumentUploadResponse
+	27, // 42: pivot.kb.v1.KnowledgeBaseService.GetDocumentDownloadURL:output_type -> pivot.kb.v1.GetDocumentDownloadURLResponse
+	30, // 43: pivot.kb.v1.KnowledgeBaseService.ListChunks:output_type -> pivot.kb.v1.ListChunksResponse
+	32, // 44: pivot.kb.v1.KnowledgeBaseService.GetParseStatus:output_type -> pivot.kb.v1.GetParseStatusResponse
+	29, // [29:45] is the sub-list for method output_type
+	13, // [13:29] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_kb_v1_kb_proto_init() }
@@ -1814,7 +2151,7 @@ func file_kb_v1_kb_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_kb_v1_kb_proto_rawDesc), len(file_kb_v1_kb_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   28,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

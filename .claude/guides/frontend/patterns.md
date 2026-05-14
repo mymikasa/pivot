@@ -67,17 +67,22 @@ const form = useAppForm({
 
 ## 4. API
 
-- API 调用优先复用 `frontend/src/lib/api-generated/`
-- 响应处理优先走 `handleApiResponse`
-- OpenAPI 契约变化后先刷新生成物，再继续改页面逻辑
+- **所有 API 调用一律使用 `@hey-api/openapi-ts` 生成的 SDK**（`frontend/src/lib/api-generated/sdk.gen.ts`），禁止手动写 axios/fetch 请求绕过生成代码
+- 后端新增或变更接口时：先更新 `frontend/openapi.json`，再跑 `npm run generate-api`，最后才写页面逻辑
+- 响应处理使用 `unwrap<T>(response)` 模式（检测 `isAxiosError` 后取 `.data`），与 `data/kb.ts` 保持一致
+- 生成的类型从 `types.gen.ts` 导入，不要为 API 响应手写 interface
 
 ```ts
-import { createClientApp } from '@/lib/api-generated'
-import { handleApiResponse } from '@/lib/api-utils'
+// ✅ 正确：使用生成的 SDK
+import { knowledgeBaseServiceListChunks } from '@/lib/api-generated/sdk.gen'
+import type { V1ListChunksResponse } from '@/lib/api-generated/types.gen'
 
-await handleApiResponse(
-  await createClientApp({ body: payload }),
+const data = unwrap<V1ListChunksResponse>(
+  await knowledgeBaseServiceListChunks({ path: { kbId, docId } }),
 )
+
+// ❌ 错误：手动写 axios/fetch 绕过生成代码
+const resp = await apiClient.get(`/api/v1/kb/${kbId}/documents/${docId}/chunks`)
 ```
 
 ## 5. Tailwind

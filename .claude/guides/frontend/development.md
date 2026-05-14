@@ -66,7 +66,7 @@
 
 ## 5. 数据访问与组件约束
 
-- API 类型和客户端调用优先复用 `frontend/src/lib/api-generated/`。
+- **所有 API 调用必须使用生成的 SDK**（`frontend/src/lib/api-generated/sdk.gen.ts`），禁止手动写 axios/fetch 请求。后端新增接口时先更新 `openapi.json`，再 `npm run generate-api`。
 - API 契约变化后，先刷新 OpenAPI 生成物，再继续写页面逻辑。
 - 页面级查询与缓存行为优先复用现有 QueryClient 配置、query options 和 hooks。
 - 优先复用 `components/ui/` 与已有共享组件；不要为一次性页面逻辑平行造一套全局框架。

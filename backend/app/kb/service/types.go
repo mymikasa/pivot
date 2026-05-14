@@ -24,4 +24,8 @@ type Service interface {
 	PrepareDocumentUpload(ctx context.Context, kbID int64, filename, contentType string, fileSize int64) (objectKey string, uploadURL string, err error)
 	ConfirmDocumentUpload(ctx context.Context, kbID int64, objectKey, filename, contentType string, fileSize int64) (domain.Document, error)
 	GetDocumentDownloadURL(ctx context.Context, kbID, docID int64) (string, domain.Document, error)
+
+	// Chunk & Parse
+	ListChunks(ctx context.Context, kbID, docID int64) ([]domain.Chunk, error)
+	GetParseStatus(ctx context.Context, kbID, docID int64) (domain.Document, error)
 }

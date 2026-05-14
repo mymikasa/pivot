@@ -3,18 +3,24 @@ import { createFileRoute, Link } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 
 import { documentPreviewOptions } from "@/data/kb"
+import { chunkListOptions } from "@/data/chunk"
 
 export const Route = createFileRoute(
   "/_authenticated/kb/$kbId/$docId",
 )({
-  component: DocumentPreviewPage,
+  component: DocumentDetailPage,
 })
 
-function DocumentPreviewPage() {
+function DocumentDetailPage() {
   const { kbId, docId } = Route.useParams()
   const { data, isLoading, isError } = useQuery(
     documentPreviewOptions(kbId, docId),
   )
+  const {
+    data: chunks,
+    isLoading: chunksLoading,
+    isError: chunksError,
+  } = useQuery(chunkListOptions(kbId, docId))
 
   if (isLoading) {
     return (
@@ -78,13 +84,43 @@ function DocumentPreviewPage() {
   const downloadUrl = data?.downloadUrl ?? ""
 
   return (
-    <div className="mx-auto max-w-6xl p-5 lg:p-8">
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link
-            to="/kb/$kbId"
-            params={{ kbId }}
-            className="inline-flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-accent"
+    <div className="flex h-screen flex-col">
+      {/* Header */}
+      <div className="shrink-0 border-b border-border-dim bg-surface-0 px-5 py-3 lg:px-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link
+              to="/kb/$kbId"
+              params={{ kbId }}
+              className="inline-flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-accent"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              返回
+            </Link>
+            <span className="text-border-dim">|</span>
+            <h1
+              data-testid="preview-filename"
+              className="font-display text-lg font-semibold text-text-primary"
+            >
+              {filename}
+            </h1>
+          </div>
+          <a
+            href={downloadUrl}
+            download={filename}
+            data-testid="preview-download-button"
+            className="flex items-center gap-1.5 rounded-lg border border-border-dim px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-2"
           >
             <svg
               width="14"
@@ -92,51 +128,83 @@ function DocumentPreviewPage() {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <polyline points="15 18 9 12 15 6" />
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
-            返回
-          </Link>
-          <span className="text-border-dim">|</span>
-          <h1
-            data-testid="preview-filename"
-            className="font-display text-lg font-semibold text-text-primary"
-          >
-            {filename}
-          </h1>
+            下载
+          </a>
         </div>
-        <a
-          href={downloadUrl}
-          download={filename}
-          data-testid="preview-download-button"
-          className="flex items-center gap-1.5 rounded-lg border border-border-dim px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-2"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          下载
-        </a>
       </div>
 
-      <PreviewContent
-        contentType={contentType}
-        downloadUrl={downloadUrl}
-        filename={filename}
-      />
+      {/* Main content: left preview + right chunks */}
+      <div className="flex min-h-0 flex-1">
+        {/* Left: Document Preview */}
+        <div className="flex-1 overflow-auto p-5 lg:p-6">
+          <PreviewContent
+            contentType={contentType}
+            downloadUrl={downloadUrl}
+            filename={filename}
+          />
+        </div>
+
+        {/* Right: Chunks Panel */}
+        <div className="flex w-[420px] shrink-0 flex-col border-l border-border-dim bg-surface-0">
+          <div className="shrink-0 border-b border-border-dim px-4 py-3">
+            <h2 className="text-sm font-semibold text-text-primary">
+              Chunks
+              {!chunksLoading && chunks && (
+                <span className="ml-1.5 text-xs font-normal text-text-muted">
+                  ({chunks.length})
+                </span>
+              )}
+            </h2>
+          </div>
+          <div className="flex-1 overflow-auto p-4">
+            {chunksLoading && (
+              <div className="py-10 text-center text-sm text-text-muted">
+                加载中...
+              </div>
+            )}
+            {chunksError && (
+              <div className="rounded-lg border border-danger/30 bg-danger-dim p-4 text-center">
+                <p className="text-xs text-danger">Chunks 加载失败</p>
+              </div>
+            )}
+            {chunks && chunks.length === 0 && (
+              <div className="py-10 text-center">
+                <p className="text-sm text-text-muted">
+                  暂无 Chunks，请先解析文档
+                </p>
+              </div>
+            )}
+            {chunks &&
+              chunks.length > 0 &&
+              chunks.map((chunk) => (
+                <div
+                  key={chunk.id}
+                  className="mb-3 rounded-lg border border-border-dim bg-white p-3"
+                >
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="rounded bg-surface-2 px-1.5 py-0.5 text-xs font-medium text-text-muted">
+                      #{chunk.chunk_index}
+                    </span>
+                    <span className="text-xs text-text-muted">
+                      {chunk.token_count} tokens
+                    </span>
+                  </div>
+                  <p className="line-clamp-6 text-xs leading-relaxed text-text-secondary">
+                    {chunk.content}
+                  </p>
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -163,7 +231,7 @@ function PreviewContent({
         <iframe
           src={downloadUrl}
           title={filename}
-          className="h-[80vh] w-full"
+          className="h-[75vh] w-full"
         />
       </div>
     )
@@ -178,7 +246,7 @@ function PreviewContent({
         <img
           src={downloadUrl}
           alt={filename}
-          className="max-h-[80vh] max-w-full object-contain"
+          className="max-h-[75vh] max-w-full object-contain"
         />
       </div>
     )

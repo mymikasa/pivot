@@ -70,6 +70,14 @@ service KnowledgeBaseService {
   rpc GetDocumentDownloadURL(GetDocumentDownloadURLRequest) returns (GetDocumentDownloadURLResponse) {
     option (google.api.http) = { get: "/api/v1/kb/{kb_id}/documents/{doc_id}/download-url" };
   }
+
+  // Chunk & parse status
+  rpc ListChunks(ListChunksRequest) returns (ListChunksResponse) {
+    option (google.api.http) = { get: "/api/v1/kb/{kb_id}/documents/{doc_id}/chunks" };
+  }
+  rpc GetParseStatus(GetParseStatusRequest) returns (GetParseStatusResponse) {
+    option (google.api.http) = { get: "/api/v1/kb/{kb_id}/documents/{doc_id}/parse-status" };
+  }
 }
 
 // --- Knowledge base messages ---
@@ -226,4 +234,36 @@ message GetDocumentDownloadURLResponse {
   string download_url = 1;
   string filename = 2;
   string content_type = 3;
+}
+
+// --- Chunk messages ---
+
+message Chunk {
+  int64 id = 1;
+  int64 kb_id = 2;
+  int64 document_id = 3;
+  int32 chunk_index = 4;
+  string content = 5;
+  int32 token_count = 6;
+}
+
+message ListChunksRequest {
+  int64 kb_id = 1;
+  int64 doc_id = 2;
+}
+
+message ListChunksResponse {
+  repeated Chunk items = 1;
+}
+
+message GetParseStatusRequest {
+  int64 kb_id = 1;
+  int64 doc_id = 2;
+}
+
+message GetParseStatusResponse {
+  string status = 1;
+  int32 progress = 2;
+  string error = 3;
+  google.protobuf.Timestamp parsed_at = 4;
 }
