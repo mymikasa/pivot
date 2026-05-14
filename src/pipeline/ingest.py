@@ -6,11 +6,18 @@ from llama_index.core.vector_stores.types import BasePydanticVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.vector_stores.milvus import MilvusVectorStore
+from pymilvus import DataType
 
 from src.core.config import settings
 from src.pipeline.parsers import PARSERS, clean_sections, chunk_sections
 
 logger = logging.getLogger(__name__)
+
+
+class UnsupportedContentTypeError(ValueError):
+    def __init__(self, content_type: str) -> None:
+        super().__init__(f"不支持的文件格式: {content_type}")
+        self.content_type = content_type
 
 
 def _build_embedding():
@@ -31,7 +38,9 @@ def _build_vector_store() -> BasePydanticVectorStore:
     return MilvusVectorStore(
         uri=settings.milvus_uri,
         dim=settings.embedding_dim,
-        overwrite=False,
+        overwrite=True,
+        scalar_field_names=["kb_id", "doc_document_id", "chunk_index"],
+        scalar_field_types=[DataType.VARCHAR, DataType.VARCHAR, DataType.INT64],
     )
 
 
@@ -47,7 +56,9 @@ def ingest_bytes(
 ) -> int:
     """解析 → 清洗 → 分块 → 向量化 → 存入 Milvus，返回写入节点数。"""
     # 1. 解析
-    parser = PARSERS.get(content_type, PARSERS["text/plain"])
+    if content_type not in PARSERS:
+        raise UnsupportedContentTypeError(content_type)
+    parser = PARSERS[content_type]
     sections = parser(raw)
 
     # 2. 清洗
@@ -61,7 +72,7 @@ def ingest_bytes(
     # 4. 构造 TextNode
     base_metadata = {
         "kb_id": str(kb_id),
-        "document_id": str(document_id),
+        "doc_document_id": str(document_id),
         "object_key": object_key,
         "content_type": content_type,
     }

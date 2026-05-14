@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from src.pipeline.ingest import _build_embedding, ingest_bytes
+from src.pipeline.ingest import UnsupportedContentTypeError, _build_embedding, ingest_bytes
 
 
 def test_ingest_plain_text():
@@ -66,3 +66,14 @@ def test_ingest_empty_input():
 def test_build_embedding():
     embed = _build_embedding()
     assert embed is not None
+
+
+def test_unsupported_content_type():
+    with pytest.raises(UnsupportedContentTypeError, match="不支持的文件格式: application/vnd"):
+        ingest_bytes(
+            b"fake xlsx content",
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            kb_id=1,
+            document_id=99,
+            object_key="data.xlsx",
+        )
