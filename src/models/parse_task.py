@@ -27,6 +27,8 @@ class ParseTask(Base):
     document_id: Mapped[int] = mapped_column(BigInteger, nullable=False, index=True)
     object_key: Mapped[str] = mapped_column(String(512), nullable=False)
     content_type: Mapped[str] = mapped_column(String(128), nullable=False)
+    filename: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    user_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     status: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
     progress: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)

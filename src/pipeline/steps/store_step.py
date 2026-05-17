@@ -31,29 +31,26 @@ def persist_document_chunks(db: Session, ctx: PipelineContext) -> int:
     chunk_overlap = int(ctx.metadata.get("chunk_overlap", 50))
     version = int(ctx.metadata.get("version", 1))
     user_id = ctx.metadata.get("user_id")
-    milvus_ids = ctx.metadata.get("milvus_ids", [])
 
-    for chunk in ctx.chunks:
-        metadata = chunk.metadata
-        milvus_id = milvus_ids[chunk.index] if chunk.index < len(milvus_ids) else None
+    for i, node in enumerate(ctx.nodes):
+        meta = node.metadata
         db.add(
             DocumentChunk(
                 kb_id=ctx.kb_id,
                 document_id=ctx.document_id,
-                chunk_index=chunk.index,
-                content=chunk.content,
-                token_count=chunk.token_count,
-                source_page=metadata.get("source_page"),
-                section_title=metadata.get("section_title"),
-                section_path=metadata.get("section_path"),
+                chunk_index=meta.get("chunk_index", i),
+                content=node.text,
+                token_count=meta.get("token_count", len(node.text.split())),
+                source_page=meta.get("source_page"),
+                section_title=meta.get("section_title"),
+                section_path=meta.get("section_path"),
                 filename=filename,
                 content_type=ctx.content_type,
                 chunk_size=chunk_size,
                 chunk_overlap=chunk_overlap,
                 version=version,
                 user_id=user_id,
-                milvus_id=milvus_id,
             )
         )
     db.commit()
-    return len(ctx.chunks)
+    return len(ctx.nodes)

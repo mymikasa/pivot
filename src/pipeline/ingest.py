@@ -10,14 +10,13 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.vector_stores.milvus.base import MILVUS_ID_FIELD
 from llama_index.vector_stores.milvus.utils import BaseSparseEmbeddingFunction
 from llama_index.vector_stores.milvus import MilvusVectorStore
+from pathlib import PurePosixPath
 from pymilvus import DataType
 from sqlalchemy.orm import Session
 
 from src.core.config import settings
-from src.pipeline.context import Chunk as PipelineChunk
-from src.pipeline.context import PipelineContext
-from src.pipeline.parsers import PARSERS, clean_sections, chunk_sections
-from src.pipeline.steps.store_step import persist_document_chunks
+from src.models.document_chunk import DocumentChunk
+from src.pipeline.parsers import PARSERS, clean_nodes, chunk_nodes
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +89,55 @@ def _build_vector_store() -> BasePydanticVectorStore:
     )
 
 
+def _persist_nodes(
+    db: Session,
+    nodes: list[TextNode],
+    *,
+    kb_id: int,
+    document_id: int,
+    object_key: str,
+    content_type: str,
+    metadata: dict,
+) -> int:
+    db.query(DocumentChunk).filter(
+        DocumentChunk.kb_id == kb_id,
+        DocumentChunk.document_id == document_id,
+    ).delete()
+
+    filename = str(
+        metadata.get("filename")
+        or PurePosixPath(object_key).name
+        or object_key
+    )
+    chunk_size = int(metadata.get("chunk_size", 512))
+    chunk_overlap = int(metadata.get("chunk_overlap", 50))
+    version = int(metadata.get("version", 1))
+    user_id = metadata.get("user_id")
+
+    for i, node in enumerate(nodes):
+        meta = node.metadata
+        db.add(
+            DocumentChunk(
+                kb_id=kb_id,
+                document_id=document_id,
+                chunk_index=meta.get("chunk_index", i),
+                content=node.text,
+                token_count=meta.get("token_count", len(node.text.split())),
+                source_page=meta.get("source_page"),
+                section_title=meta.get("section_title"),
+                section_path=meta.get("section_path"),
+                filename=filename,
+                content_type=content_type,
+                chunk_size=chunk_size,
+                chunk_overlap=chunk_overlap,
+                version=version,
+                user_id=user_id,
+            )
+        )
+    db.commit()
+    return len(nodes)
+
+
 def ingest_bytes(
     raw: bytes,
     *,
@@ -103,33 +151,27 @@ def ingest_bytes(
     user_id: int | None = None,
     db: Session | None = None,
 ) -> int:
-    """解析 → 清洗 → 分块 → 向量化 → 存入 Milvus，返回写入节点数。"""
-    # 1. 解析
+    """解析 → 清洗 → 分块 → 向量化 → 存入 Milvus + MySQL，返回写入节点数。"""
+    # 1. 解析 → TextNode
     if content_type not in PARSERS:
         raise UnsupportedContentTypeError(content_type)
-    parser = PARSERS[content_type]
-    sections = parser(raw)
+    nodes = PARSERS[content_type](raw)
 
     # 2. 清洗
-    sections = clean_sections(sections)
+    nodes = clean_nodes(nodes)
 
     # 3. 分块
-    chunks = chunk_sections(sections, chunk_size, chunk_overlap)
-    if not chunks:
+    nodes = chunk_nodes(nodes, chunk_size, chunk_overlap)
+    if not nodes:
         return 0
 
-    # 4. 构造 TextNode
-    base_metadata = {
-        "kb_id": kb_id,
-        "pivot_document_id": document_id,
-    }
-    nodes = [
-        TextNode(
-            text=c.content,
-            metadata={**base_metadata, **c.metadata, "chunk_index": c.index},
-        )
-        for c in chunks
-    ]
+    # 4. 注入 metadata（Milvus 过滤 + 检索时可直接返回）
+    for i, node in enumerate(nodes):
+        node.metadata["kb_id"] = kb_id
+        node.metadata["pivot_document_id"] = document_id
+        node.metadata["chunk_index"] = i
+        node.metadata["filename"] = filename or ""
+        node.metadata["content_type"] = content_type
 
     # 5. Embedding + 写入 Milvus
     embed_model = _build_embedding()
@@ -143,22 +185,15 @@ def ingest_bytes(
         show_progress=False,
     )
 
+    # 6. 写入 MySQL
     if db is not None:
-        ctx = PipelineContext(
+        _persist_nodes(
+            db,
+            nodes,
             kb_id=kb_id,
             document_id=document_id,
             object_key=object_key,
             content_type=content_type,
-            raw_binary=raw,
-            chunks=[
-                PipelineChunk(
-                    index=chunk.index,
-                    content=chunk.content,
-                    token_count=chunk.token_count,
-                    metadata=chunk.metadata,
-                )
-                for chunk in chunks
-            ],
             metadata={
                 "filename": filename,
                 "chunk_size": chunk_size,
@@ -166,7 +201,6 @@ def ingest_bytes(
                 "user_id": user_id,
             },
         )
-        persist_document_chunks(db, ctx)
 
     logger.info(
         "ingest完成: kb_id=%s document_id=%s nodes=%d",

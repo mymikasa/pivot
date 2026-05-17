@@ -24,6 +24,14 @@ export type CreateParseTaskRequest = {
      * Content Type
      */
     content_type: string;
+    /**
+     * Filename
+     */
+    filename?: string;
+    /**
+     * User Id
+     */
+    user_id?: number;
 };
 
 /**

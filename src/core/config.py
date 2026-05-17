@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     embedding_api_base: str = "https://api.openai.com/v1"
     embedding_dim: int = 512
 
+    reranker_provider: str = ""
+    reranker_model: str = ""
+
     worker_poll_interval_seconds: float = 2.0
     worker_enabled: bool = False
 
@@ -147,6 +150,7 @@ def _settings_values_from_yaml(config: dict[str, Any]) -> dict[str, Any]:
     minio = config.get("minio", {})
     milvus = config.get("milvus", {})
     embedding = config.get("embedding", {})
+    reranker = config.get("reranker", {})
     worker = config.get("worker", {})
 
     return {
@@ -171,6 +175,8 @@ def _settings_values_from_yaml(config: dict[str, Any]) -> dict[str, Any]:
         "embedding_api_key": embedding.get("api_key"),
         "embedding_api_base": embedding.get("api_base"),
         "embedding_dim": embedding.get("dim"),
+        "reranker_provider": reranker.get("provider"),
+        "reranker_model": reranker.get("model"),
         "worker_poll_interval_seconds": worker.get("poll_interval_seconds"),
         "worker_enabled": worker.get("enabled"),
     }

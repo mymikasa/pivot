@@ -20,7 +20,8 @@ class EmbedStep(PipelineStep):
         self.dim = dim
 
     async def execute(self, ctx: PipelineContext) -> PipelineContext:
-        ctx.embeddings = [await self.embed_text(chunk.content) for chunk in ctx.chunks]
+        for node in ctx.nodes:
+            node.embedding = await self.embed_text(node.text)
         return ctx
 
     async def embed_text(self, text: str) -> list[float]:

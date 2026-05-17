@@ -15,12 +15,16 @@ class TaskManager:
         document_id: int,
         object_key: str,
         content_type: str,
+        filename: str | None = None,
+        user_id: int | None = None,
     ) -> ParseTask:
         task = ParseTask(
             kb_id=kb_id,
             document_id=document_id,
             object_key=object_key,
             content_type=content_type,
+            filename=filename,
+            user_id=user_id,
             status=ParseTaskStatus.PENDING.value,
             progress=0,
         )

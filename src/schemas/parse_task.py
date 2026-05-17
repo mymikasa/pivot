@@ -8,6 +8,8 @@ class CreateParseTaskRequest(BaseModel):
     document_id: int = Field(gt=0)
     object_key: str = Field(min_length=1, max_length=512)
     content_type: str = Field(min_length=1, max_length=128)
+    filename: str | None = None
+    user_id: int | None = None
 
 
 class CreateParseTaskResponse(BaseModel):

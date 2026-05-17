@@ -336,6 +336,7 @@ function DocumentRow({
       documentId: doc.id,
       objectKey,
       contentType,
+      filename: doc.filename ?? "",
     })
   }
 

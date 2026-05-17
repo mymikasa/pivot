@@ -80,6 +80,7 @@ export function useCreateParseTaskMutation(kbId: string) {
       documentId: string
       objectKey: string
       contentType: string
+      filename: string
     }) => {
       return unwrap<CreateParseTaskResponse>(
         await createParseTaskApiV1ParseTasksPost({
@@ -88,6 +89,7 @@ export function useCreateParseTaskMutation(kbId: string) {
             document_id: Number(input.documentId),
             object_key: input.objectKey,
             content_type: input.contentType,
+            filename: input.filename,
           },
         }),
       )

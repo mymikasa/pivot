@@ -35,6 +35,8 @@ def run_one_task(
             kb_id=task.kb_id,
             document_id=task.document_id,
             object_key=task.object_key,
+            filename=task.filename,
+            user_id=task.user_id,
             db=db,
         )
         logger.info("任务 %s 完成，写入 %d 个节点", task.id, node_count)

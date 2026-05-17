@@ -1,5 +1,9 @@
+import re
+
+from llama_index.core.schema import TextNode
+
 from src.pipeline.base import PipelineStep
-from src.pipeline.context import Chunk, PipelineContext
+from src.pipeline.context import PipelineContext
 
 
 class ChunkStep(PipelineStep):
@@ -12,25 +16,21 @@ class ChunkStep(PipelineStep):
         self.overlap = overlap
 
     async def execute(self, ctx: PipelineContext) -> PipelineContext:
-        chunks: list[Chunk] = []
+        result: list[TextNode] = []
         step_size = self.chunk_token_num - self.overlap
         ctx.metadata["chunk_size"] = self.chunk_token_num
         ctx.metadata["chunk_overlap"] = self.overlap
 
-        for section in ctx.sections:
-            tokens = section.text.split()
+        for node in ctx.nodes:
+            tokens = node.text.split()
             for start in range(0, len(tokens), step_size):
                 window = tokens[start : start + self.chunk_token_num]
                 if not window:
                     continue
-                chunks.append(
-                    Chunk(
-                        index=len(chunks),
-                        content=" ".join(window),
-                        token_count=len(window),
-                        metadata=section.metadata,
-                    )
-                )
+                result.append(TextNode(
+                    text=" ".join(window),
+                    metadata={**node.metadata, "token_count": len(window)},
+                ))
 
-        ctx.chunks = chunks
+        ctx.nodes = result
         return ctx

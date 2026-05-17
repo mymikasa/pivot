@@ -41,6 +41,8 @@ def create_parse_task(
         document_id=body.document_id,
         object_key=body.object_key,
         content_type=body.content_type,
+        filename=body.filename,
+        user_id=body.user_id or _user.user_id,
     )
     return CreateParseTaskResponse(task_id=task.id, status=task.status)
 

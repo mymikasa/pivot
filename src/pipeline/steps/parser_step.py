@@ -2,8 +2,10 @@ import json
 from html.parser import HTMLParser
 from typing import Any
 
+from llama_index.core.schema import TextNode
+
 from src.pipeline.base import PipelineStep
-from src.pipeline.context import PipelineContext, Section
+from src.pipeline.context import PipelineContext
 
 
 class _TextExtractor(HTMLParser):
@@ -19,8 +21,10 @@ class _TextExtractor(HTMLParser):
 class ParserStep(PipelineStep):
     async def execute(self, ctx: PipelineContext) -> PipelineContext:
         text = self._to_text(ctx.raw_binary, ctx.content_type)
-        ctx.sections = [
-            Section(text=part.strip()) for part in text.splitlines() if part.strip()
+        ctx.nodes = [
+            TextNode(text=part.strip())
+            for part in text.splitlines()
+            if part.strip()
         ]
         return ctx
 

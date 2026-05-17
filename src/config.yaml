@@ -27,6 +27,9 @@ embedding:
   api_key: ""
   api_base: "https://api.openai.com/v1"
   dim: 512
+reranker:
+  provider: ""
+  model: ""
 worker:
   poll_interval_seconds: 2.0
   enabled: true
