@@ -98,3 +98,103 @@ worker:
     assert settings.minio_endpoint == "localhost:19000"
     assert settings.worker_poll_interval_seconds == 1.5
     assert settings.worker_enabled is True
+
+
+# ── reranker config ─────────────────────────────────────────────
+
+
+def test_settings_reranker_defaults_empty():
+    settings = Settings(
+        database_url="sqlite:///:memory:",
+        server_port=8080,
+    )
+    assert settings.reranker_provider == ""
+    assert settings.reranker_model == ""
+
+
+def test_load_settings_reads_reranker_config(tmp_path):
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(
+        """
+server:
+  host: "127.0.0.1"
+  port: 8010
+db:
+  url: "mysql+pymysql://pivot:pivot_pass_2026@localhost:13306/pivot"
+log:
+  level: "debug"
+jwt:
+  secret: "yaml-secret"
+  issuer: "pivot"
+  audience: "user"
+minio:
+  endpoint: "localhost:19000"
+  bucket: "pivot"
+  access_key: "minioadmin"
+  secret_key: "minioadmin"
+  secure: false
+milvus:
+  uri: "./milvus.db"
+embedding:
+  model: "text-embedding-3-small"
+  api_key: ""
+  api_base: "https://api.openai.com/v1"
+  dim: 1536
+worker:
+  poll_interval_seconds: 1.5
+  enabled: true
+reranker:
+  provider: "bge"
+  model: "BAAI/bge-reranker-v2-m3"
+""",
+        encoding="utf-8",
+    )
+
+    settings = load_settings(config_file)
+
+    assert settings.reranker_provider == "bge"
+    assert settings.reranker_model == "BAAI/bge-reranker-v2-m3"
+
+
+def test_load_settings_reranker_default_empty(tmp_path):
+    config_file = tmp_path / "config.yaml"
+    config_file.write_text(
+        """
+server:
+  host: "127.0.0.1"
+  port: 8010
+db:
+  url: "mysql+pymysql://pivot:pivot_pass_2026@localhost:13306/pivot"
+log:
+  level: "debug"
+jwt:
+  secret: "yaml-secret"
+  issuer: "pivot"
+  audience: "user"
+minio:
+  endpoint: "localhost:19000"
+  bucket: "pivot"
+  access_key: "minioadmin"
+  secret_key: "minioadmin"
+  secure: false
+milvus:
+  uri: "./milvus.db"
+embedding:
+  model: "text-embedding-3-small"
+  api_key: ""
+  api_base: "https://api.openai.com/v1"
+  dim: 1536
+worker:
+  poll_interval_seconds: 1.5
+  enabled: true
+reranker:
+  provider: ""
+  model: ""
+""",
+        encoding="utf-8",
+    )
+
+    settings = load_settings(config_file)
+
+    assert settings.reranker_provider == ""
+    assert settings.reranker_model == ""
