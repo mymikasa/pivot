@@ -1,6 +1,7 @@
 import pytest
 
 from src.rag.parsers.base import BaseParser, ParseResult
+from src.rag.errors import UnsupportedContentTypeError
 
 
 def test_parse_result_default_metadata():
@@ -110,3 +111,84 @@ def test_pdf_parser_content_type():
 
 def test_docx_parser_content_type():
     assert DocxParser.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+
+# ---------------------------------------------------------------------------
+# ParserRegistry tests
+# ---------------------------------------------------------------------------
+
+from src.rag.parsers.registry import ParserRegistry
+
+
+class _FakeParser(BaseParser):
+    content_type = "application/fake"
+    variants = ["+special"]
+
+    def parse(self, raw: bytes, config=None) -> ParseResult:
+        from llama_index.core.schema import TextNode
+
+        return ParseResult(nodes=[TextNode(text="fake")])
+
+
+def _make_registry() -> ParserRegistry:
+    reg = ParserRegistry()
+    reg.register(_FakeParser())
+    return reg
+
+
+def test_registry_get_exact():
+    reg = _make_registry()
+    parser = reg.get("application/fake")
+    assert isinstance(parser, _FakeParser)
+
+
+def test_registry_get_variant():
+    reg = _make_registry()
+    parser = reg.get("application/fake+special")
+    assert isinstance(parser, _FakeParser)
+
+
+def test_registry_get_not_found():
+    reg = _make_registry()
+    with pytest.raises(UnsupportedContentTypeError):
+        reg.get("application/unknown")
+
+
+def test_registry_variant_fallback():
+    reg = _make_registry()
+    parser = reg.get("application/fake+other")
+    assert isinstance(parser, _FakeParser)
+
+
+def test_registry_supported_types():
+    reg = _make_registry()
+    assert "application/fake" in reg.supported_types
+
+
+def test_registry_returns_same_instance():
+    reg = _make_registry()
+    p1 = reg.get("application/fake")
+    p2 = reg.get("application/fake")
+    assert p1 is p2
+
+
+# ---------------------------------------------------------------------------
+# Global registry integration tests
+# ---------------------------------------------------------------------------
+
+from src.rag.parsers import registry as global_registry
+
+
+def test_registry_has_all_builtin_parsers():
+    expected = [
+        "text/plain",
+        "application/json",
+        "text/html",
+        "text/markdown",
+        "text/x-markdown",
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ]
+    types = global_registry.supported_types
+    for ct in expected:
+        assert ct in types, f"{ct} not in registry"
