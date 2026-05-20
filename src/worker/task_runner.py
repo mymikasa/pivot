@@ -1,13 +1,13 @@
 import logging
 import threading
 import time
-from collections.abc import Callable
 
 from sqlalchemy.orm import Session, sessionmaker
 
 from src.infrastructure.config import settings
 from src.infrastructure.minio import MinIOClient
-from src.pipeline.ingest import ingest_bytes
+from src.rag.dependencies import build_embedding, build_vector_store
+from src.rag.ingest import IngestPipeline
 from src.worker.task_manager import TaskManager
 
 logger = logging.getLogger(__name__)
@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 def run_one_task(
     db: Session,
     *,
-    download_file: Callable[[str], bytes],
-    ingest_file: Callable[..., int] = ingest_bytes,
+    download_file: callable,
+    pipeline: IngestPipeline,
 ) -> bool:
     manager = TaskManager(db)
     task = manager.claim_next_pending_task()
@@ -29,7 +29,7 @@ def run_one_task(
         raw_binary = download_file(task.object_key)
 
         manager.update_progress(task.id, 30)
-        node_count = ingest_file(
+        node_count = pipeline.run(
             raw_binary,
             content_type=task.content_type,
             kb_id=task.kb_id,
@@ -63,6 +63,7 @@ class ParseTaskWorker:
         self.poll_interval_seconds = poll_interval_seconds
         self._stop_event = threading.Event()
         self._thread: threading.Thread | None = None
+        self._pipeline = IngestPipeline(build_embedding(), build_vector_store())
 
     def start(self) -> None:
         if self._thread is not None and self._thread.is_alive():
@@ -81,6 +82,7 @@ class ParseTaskWorker:
                 did_work = run_one_task(
                     db,
                     download_file=self.minio_client.download,
+                    pipeline=self._pipeline,
                 )
             if not did_work:
                 time.sleep(self.poll_interval_seconds)

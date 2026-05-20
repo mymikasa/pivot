@@ -28,8 +28,12 @@ embedding:
   api_base: "https://api.openai.com/v1"
   dim: 512
 reranker:
-  provider: ""
-  model: ""
+  provider: "huggingface"
+  model: "BAAI/bge-reranker-v2-m3"
+llm:
+  api_key: "sk-1fda30cf56264b80aa352f319ff58a6e"
+  api_base: "https://api.deepseek.com"
+  model: "deepseek-chat"
 worker:
   poll_interval_seconds: 2.0
   enabled: true
