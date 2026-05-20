@@ -2,7 +2,7 @@ import logging
 
 from minio import Minio
 
-from src.core.config import settings
+from src.infrastructure.config import settings
 
 logger = logging.getLogger(__name__)
 

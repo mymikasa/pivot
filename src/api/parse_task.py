@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from src.api.deps import get_current_parse_user, get_db
-from src.core.security import AuthenticatedUser
+from src.infrastructure.security import AuthenticatedUser
 from src.models.parse_task import ParseTask
 from src.schemas.parse_task import (
     CreateParseTaskRequest,

@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from src.core.database import Base
+from src.infrastructure.database import Base
 from src.models import DocumentChunk, ParseTask  # noqa: F401 — register tables
 
 engine = create_engine(

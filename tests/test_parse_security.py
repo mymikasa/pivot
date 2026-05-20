@@ -4,7 +4,7 @@ import jwt
 import pytest
 from fastapi import HTTPException
 
-from src.core.security import AuthenticatedUser, decode_access_token
+from src.infrastructure.security import AuthenticatedUser, decode_access_token
 
 
 def test_decode_access_token_returns_user():

@@ -5,8 +5,8 @@ from collections.abc import Callable
 
 from sqlalchemy.orm import Session, sessionmaker
 
-from src.core.config import settings
-from src.core.minio import MinIOClient
+from src.infrastructure.config import settings
+from src.infrastructure.minio import MinIOClient
 from src.pipeline.ingest import ingest_bytes
 from src.worker.task_manager import TaskManager
 

@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     reranker_provider: str = ""
     reranker_model: str = ""
 
+    llm_api_key: str = ""
+    llm_api_base: str = "https://api.openai.com/v1"
+    llm_model: str = "gpt-4o-mini"
+
     worker_poll_interval_seconds: float = 2.0
     worker_enabled: bool = False
 
@@ -151,6 +155,7 @@ def _settings_values_from_yaml(config: dict[str, Any]) -> dict[str, Any]:
     milvus = config.get("milvus", {})
     embedding = config.get("embedding", {})
     reranker = config.get("reranker", {})
+    llm = config.get("llm", {})
     worker = config.get("worker", {})
 
     return {
@@ -177,6 +182,9 @@ def _settings_values_from_yaml(config: dict[str, Any]) -> dict[str, Any]:
         "embedding_dim": embedding.get("dim"),
         "reranker_provider": reranker.get("provider"),
         "reranker_model": reranker.get("model"),
+        "llm_api_key": llm.get("api_key"),
+        "llm_api_base": llm.get("api_base"),
+        "llm_model": llm.get("model"),
         "worker_poll_interval_seconds": worker.get("poll_interval_seconds"),
         "worker_enabled": worker.get("enabled"),
     }
@@ -185,7 +193,9 @@ def _settings_values_from_yaml(config: dict[str, Any]) -> dict[str, Any]:
 def load_settings(config_path: str | Path | None = None) -> Settings:
     path = Path(config_path or os.getenv("PIVOT_CONFIG_FILE", DEFAULT_CONFIG_PATH))
     values = _settings_values_from_yaml(_load_simple_yaml(path))
-    return Settings(**{key: value for key, value in values.items() if value is not None})
+    return Settings(
+        **{key: value for key, value in values.items() if value is not None}
+    )
 
 
 settings = load_settings()

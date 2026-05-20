@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from src.core.config import Settings, load_settings
+from src.infrastructure.config import Settings, load_settings
 
 
 def test_settings_accepts_valid_values():
@@ -144,7 +144,7 @@ worker:
   poll_interval_seconds: 1.5
   enabled: true
 reranker:
-  provider: "bge"
+  provider: "huggingface"
   model: "BAAI/bge-reranker-v2-m3"
 """,
         encoding="utf-8",
@@ -152,7 +152,7 @@ reranker:
 
     settings = load_settings(config_file)
 
-    assert settings.reranker_provider == "bge"
+    assert settings.reranker_provider == "huggingface"
     assert settings.reranker_model == "BAAI/bge-reranker-v2-m3"
 
 

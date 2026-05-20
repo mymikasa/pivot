@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from src.core.database import Base
+from src.infrastructure.database import Base
 from src.models.document_chunk import DocumentChunk
 from src.models.parse_task import ParseTask, ParseTaskStatus
 

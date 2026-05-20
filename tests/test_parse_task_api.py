@@ -3,8 +3,8 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from fastapi.testclient import TestClient
 
-from src.core.config import settings
-from src.core.database import Base, get_db
+from src.infrastructure.config import settings
+from src.infrastructure.database import Base, get_db
 from src.main import app
 from tests.conftest import TestingSessionLocal, engine
 

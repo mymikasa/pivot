@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.api.deps import get_current_parse_user
-from src.core.security import AuthenticatedUser
+from src.infrastructure.security import AuthenticatedUser
 from src.pipeline.search import RerankerUnavailableError, search_chunks
 from src.schemas.search import SearchHit, SearchRequest, SearchResponse
 

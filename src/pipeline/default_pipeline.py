@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.core.config import settings
+from src.infrastructure.config import settings
 from src.pipeline.executor import PipelineExecutor
 from src.pipeline.steps.chunk_step import ChunkStep
 from src.pipeline.steps.clean_step import CleanStep

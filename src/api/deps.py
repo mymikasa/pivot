@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from src.core.config import settings
-from src.core.database import get_db
-from src.core.security import AuthenticatedUser, decode_access_token
+from src.infrastructure.config import settings
+from src.infrastructure.database import get_db
+from src.infrastructure.security import AuthenticatedUser, decode_access_token
 
 
 bearer_scheme = HTTPBearer(auto_error=True)

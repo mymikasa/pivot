@@ -5,9 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.router import api_router
-from src.core.config import settings
-from src.core.database import SessionLocal
-from src.core.minio import create_minio_client
+from src.infrastructure.config import settings
+from src.infrastructure.database import SessionLocal
+from src.infrastructure.minio import create_minio_client
 from src.worker.task_runner import ParseTaskWorker
 
 logging.basicConfig(level=settings.log_level)

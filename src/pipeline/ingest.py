@@ -14,7 +14,7 @@ from pathlib import PurePosixPath
 from pymilvus import DataType
 from sqlalchemy.orm import Session
 
-from src.core.config import settings
+from src.infrastructure.config import settings
 from src.models.document_chunk import DocumentChunk
 from src.pipeline.parsers import PARSERS, clean_nodes, chunk_nodes
 
@@ -46,7 +46,9 @@ class PivotMilvusVectorStore(MilvusVectorStore):
             insert_ids.append(node.node_id)
             insert_list.append(entry)
 
-        executor_wrapper = self.client.upsert if self.upsert_mode else self.client.insert
+        executor_wrapper = (
+            self.client.upsert if self.upsert_mode else self.client.insert
+        )
         for insert_batch in iter_batch(insert_list, self.batch_size):
             executor_wrapper(
                 self.collection_name,
@@ -64,22 +66,36 @@ class UnsupportedContentTypeError(ValueError):
         self.content_type = content_type
 
 
+_cached_embedding = None
+_cached_vector_store = None
+
+
 def _build_embedding():
+    global _cached_embedding
+    if _cached_embedding is not None:
+        return _cached_embedding
     provider = settings.embedding_provider
     if provider == "openai":
-        return OpenAIEmbedding(
+        _cached_embedding = OpenAIEmbedding(
             model=settings.embedding_model,
             api_key=settings.embedding_api_key,
             api_base=settings.embedding_api_base,
             dimensions=settings.embedding_dim,
         )
-    if provider == "huggingface":
-        return HuggingFaceEmbedding(model_name=settings.embedding_model)
-    raise ValueError(f"不支持的 embedding_provider: {provider}")
+    elif provider == "huggingface":
+        _cached_embedding = HuggingFaceEmbedding(
+            model_name=settings.embedding_model, trust_remote_code=False
+        )
+    else:
+        raise ValueError(f"不支持的 embedding_provider: {provider}")
+    return _cached_embedding
 
 
 def _build_vector_store() -> BasePydanticVectorStore:
-    return PivotMilvusVectorStore(
+    global _cached_vector_store
+    if _cached_vector_store is not None:
+        return _cached_vector_store
+    _cached_vector_store = PivotMilvusVectorStore(
         uri=settings.milvus_uri,
         collection_name="pivot_chunks",
         dim=settings.embedding_dim,
@@ -87,6 +103,7 @@ def _build_vector_store() -> BasePydanticVectorStore:
         scalar_field_names=["kb_id", "document_id", "chunk_index"],
         scalar_field_types=[DataType.INT64, DataType.INT64, DataType.INT64],
     )
+    return _cached_vector_store
 
 
 def _persist_nodes(
@@ -105,9 +122,7 @@ def _persist_nodes(
     ).delete()
 
     filename = str(
-        metadata.get("filename")
-        or PurePosixPath(object_key).name
-        or object_key
+        metadata.get("filename") or PurePosixPath(object_key).name or object_key
     )
     chunk_size = int(metadata.get("chunk_size", 512))
     chunk_overlap = int(metadata.get("chunk_overlap", 50))
@@ -204,6 +219,8 @@ def ingest_bytes(
 
     logger.info(
         "ingest完成: kb_id=%s document_id=%s nodes=%d",
-        kb_id, document_id, len(nodes),
+        kb_id,
+        document_id,
+        len(nodes),
     )
     return len(nodes)

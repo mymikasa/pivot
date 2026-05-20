@@ -37,7 +37,7 @@ def main() -> int:
     os.environ["PIVOT_CONFIG_FILE"] = str(config_file)
 
     try:
-        from src.core.config import settings
+        from src.infrastructure.config import settings
     except ValidationError as exc:
         print(f"配置校验失败：\n{exc}", file=sys.stderr)
         return 1
